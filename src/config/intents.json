@@ -1,0 +1,58 @@
+[
+  {
+    "name": "ORDER_STATUS",
+    "patterns": [
+      {
+        "lang": "hi",
+        "regex": "mera.*order.*(kaha|kahaan|hai)"
+      },
+      {
+        "lang": "hi",
+        "regex": "order.*(kaha|status)"
+      },
+      {
+        "lang": "en",
+        "regex": "(where|track).*order"
+      }
+    ]
+  },
+  {
+    "name": "ORDER_NEW",
+    "patterns": [
+      {
+        "lang": "hi",
+        "regex": "(mujhe|mera).*order.*(chahiye|lena|karna)"
+      },
+      {
+        "lang": "en",
+        "regex": "(want|place|buy).*order"
+      }
+    ]
+  },
+  {
+    "name": "PAYMENT",
+    "patterns": [
+      {
+        "lang": "hi",
+        "regex": "(payment|pay).*(ho gaya|hogaya|done)"
+      },
+      {
+        "lang": "en",
+        "regex": "(payment|paid).*(done|completed)"
+      }
+    ]
+  },
+  {
+    "name": "CANCEL_ORDER",
+    "patterns": [
+      {
+        "lang": "hi",
+        "regex": "order.*cancel"
+      },
+      {
+        "lang": "en",
+        "regex": "cancel.*order"
+      }
+    ]
+  }
+]
