@@ -1,0 +1,69 @@
+{
+  "session_id": "cli_user_123",
+  "tenant_id": "urbanwear",
+  "last_product": "hoodie_001",
+  "pending_action": null,
+  "last_intent": "PRODUCT_QUERY",
+  "history": [
+    {
+      "user": "Hi how are you doing?",
+      "bot": "I'm doing great, thanks for asking. How about you? Welcome to UrbanWear, is there something I can help you with or would you like to chat?",
+      "timestamp": "2026-02-25T14:33:16.790Z"
+    },
+    {
+      "user": "I am looking for some new collection to fill my wardrobe",
+      "bot": "We've got you covered. Our new arrivals are here. What type of clothing are you looking to add to your wardrobe - tops, bottoms, dresses, or maybe outerwear?",
+      "timestamp": "2026-02-25T14:33:46.423Z"
+    },
+    {
+      "user": "Tops",
+      "bot": "We've got a wide range of tops - from graphic t-shirts to sleek hoodies. What kind of top are you looking for? Casual, athletic, or something dressier?",
+      "timestamp": "2026-02-25T14:33:55.923Z"
+    },
+    {
+      "user": "Casual",
+      "bot": "Hey, so you're looking for something casual? We've got a great selection of relaxed fits and comfy tees. What kind of vibe are you going for?",
+      "timestamp": "2026-02-25T14:34:03.018Z"
+    },
+    {
+      "user": "Casual but aesthetic",
+      "bot": "That sounds like a great combo. What kind of casual aesthetic are you thinking of? Streetwear, minimalist, or something else?",
+      "timestamp": "2026-02-25T14:34:20.698Z"
+    },
+    {
+      "user": "Streetwear",
+      "bot": "We've got a wide range of streetwear items. What are you looking for specifically - hoodies, sneakers, or maybe some trendy tees?",
+      "timestamp": "2026-02-25T14:34:42.814Z"
+    },
+    {
+      "user": "hoodies",
+      "bot": "You're looking for hoodies! We have a great one - our Classic Hoodie is made of 100% Cotton, super comfy for everyday wear. It's priced at $19.99 and comes in Black, Grey, and Blue. We have sizes S to XL in stock. Would you like to know more?",
+      "timestamp": "2026-02-25T14:34:51.007Z"
+    },
+    {
+      "user": "I would liekto know more",
+      "bot": "You're interested in learning more about our hoodie_001. It's one of our best-sellers, made from comfy cotton and priced at $29.99. Would you like to know more about sizing or colors available?",
+      "timestamp": "2026-02-25T15:08:26.262Z"
+    },
+    {
+      "user": "Hi",
+      "bot": "Hi 👋 Welcome! Kya aapko kuch help chahiye ya kisi product ke baare mein jaanna hai? 😊",
+      "timestamp": "2026-02-25T15:29:01.268Z"
+    },
+    {
+      "user": "english please",
+      "bot": "😊 Hi, welcome to UrbanWear! I'm here to help. You were looking at our hoodie_001 earlier. How can I assist you today? 🤔",
+      "timestamp": "2026-02-25T15:29:15.844Z"
+    },
+    {
+      "user": "How much the hoodies are for?",
+      "bot": "💬 Hi 👋, the Classic Hoodie is priced at ₹1999. We have various sizes and colors available 🛍️. Would you like to place an order? We accept UPI, debit/credit cards for payment 📈. 😊",
+      "timestamp": "2026-02-25T15:42:36.779Z"
+    },
+    {
+      "user": "place the order",
+      "bot": "Hey there! 👋 You wanted to place an order for the hoodie_001, right? 🤔 Please confirm, and we'll proceed with the payment. We accept UPI, debit/credit cards 💸. 😊",
+      "timestamp": "2026-02-25T15:43:03.530Z"
+    }
+  ]
+}

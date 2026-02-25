@@ -1,0 +1,59 @@
+{
+  "session_id": "test_user_001",
+  "tenant_id": "urbanwear",
+  "last_product": "hoodie_001",
+  "pending_action": "CANCEL_ORDER",
+  "last_intent": "UNKNOWN",
+  "history": [
+    {
+      "user": "Hello",
+      "bot": "Hello from UrbanWear! How can I help you today?",
+      "timestamp": "2026-02-25T14:08:00.411Z"
+    },
+    {
+      "user": "Tell me about the hoodie",
+      "bot": "Which product are you interested in?",
+      "timestamp": "2026-02-25T14:08:00.423Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "Which product are you interested in?",
+      "timestamp": "2026-02-25T14:08:00.425Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "Are you sure you want to cancel your order?",
+      "timestamp": "2026-02-25T14:08:00.428Z"
+    },
+    {
+      "user": "Yes, I am sure",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:08:00.431Z"
+    },
+    {
+      "user": "Hello",
+      "bot": "Hello from UrbanWear! How can I help you today?",
+      "timestamp": "2026-02-25T14:08:41.108Z"
+    },
+    {
+      "user": "Tell me about the hoodie",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:08:41.112Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:08:41.114Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "Are you sure you want to cancel your order?",
+      "timestamp": "2026-02-25T14:08:41.116Z"
+    },
+    {
+      "user": "Yes, I am sure",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:08:41.118Z"
+    }
+  ]
+}

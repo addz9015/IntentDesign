@@ -1,0 +1,219 @@
+{
+  "session_id": "919876543210",
+  "tenant_id": "urbanwear",
+  "last_product": "hoodie_001",
+  "pending_action": null,
+  "last_intent": "UNKNOWN",
+  "history": [
+    {
+      "user": "Hi!",
+      "bot": "Hello from UrbanWear! How can I help you today?",
+      "timestamp": "2026-02-25T14:07:42.187Z"
+    },
+    {
+      "user": "Do you have a Classic Hoodie?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:07:42.192Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:07:42.194Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "Are you sure you want to cancel your order?",
+      "timestamp": "2026-02-25T14:07:42.196Z"
+    },
+    {
+      "user": "Yes, confirm it",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:07:42.201Z"
+    },
+    {
+      "user": "What is your return policy?",
+      "bot": "Done! Successfully executed: CANCEL_ORDER",
+      "timestamp": "2026-02-25T14:07:42.203Z"
+    },
+    {
+      "user": "asdfghjkl",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:07:42.207Z"
+    },
+    {
+      "user": "Hi!",
+      "bot": "Hello from UrbanWear! How can I help you today?",
+      "timestamp": "2026-02-25T14:09:23.144Z"
+    },
+    {
+      "user": "Do you have a Classic Hoodie?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:09:23.150Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:09:23.152Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "Are you sure you want to cancel your order?",
+      "timestamp": "2026-02-25T14:09:23.155Z"
+    },
+    {
+      "user": "Yes, confirm it",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:09:23.159Z"
+    },
+    {
+      "user": "What is your return policy?",
+      "bot": "Done! Successfully executed: CANCEL_ORDER",
+      "timestamp": "2026-02-25T14:09:23.163Z"
+    },
+    {
+      "user": "asdfghjkl",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:09:23.166Z"
+    },
+    {
+      "user": "Hi!",
+      "bot": "Hello from UrbanWear! How can I help you today?",
+      "timestamp": "2026-02-25T14:19:34.467Z"
+    },
+    {
+      "user": "Do you have a Classic Hoodie?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:19:34.532Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:19:34.591Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "Are you sure you want to cancel your order?",
+      "timestamp": "2026-02-25T14:19:34.663Z"
+    },
+    {
+      "user": "Yes, confirm it",
+      "bot": "Done! Successfully executed: CANCEL_ORDER",
+      "timestamp": "2026-02-25T14:19:34.735Z"
+    },
+    {
+      "user": "What is your return policy?",
+      "bot": "I can help with cancellations and refunds. What would you like to do?",
+      "timestamp": "2026-02-25T14:19:34.792Z"
+    },
+    {
+      "user": "asdfghjkl",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:19:34.857Z"
+    },
+    {
+      "user": "Hi!",
+      "bot": "Hello from UrbanWear! How can I help you today?",
+      "timestamp": "2026-02-25T14:20:36.990Z"
+    },
+    {
+      "user": "Do you have a Classic Hoodie?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:20:37.055Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:20:37.166Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "Are you sure you want to cancel your order?",
+      "timestamp": "2026-02-25T14:20:37.233Z"
+    },
+    {
+      "user": "Yes, confirm it",
+      "bot": "Done! Successfully executed: CANCEL_ORDER",
+      "timestamp": "2026-02-25T14:20:37.310Z"
+    },
+    {
+      "user": "What is your return policy?",
+      "bot": "I can help with cancellations and refunds. What would you like to do?",
+      "timestamp": "2026-02-25T14:20:37.376Z"
+    },
+    {
+      "user": "asdfghjkl",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:20:37.434Z"
+    },
+    {
+      "user": "Hi!",
+      "bot": "Hello from UrbanWear! How can I help you today?",
+      "timestamp": "2026-02-25T14:21:02.670Z"
+    },
+    {
+      "user": "Do you have a Classic Hoodie?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:21:02.745Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
+      "timestamp": "2026-02-25T14:21:02.813Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "Are you sure you want to cancel your order?",
+      "timestamp": "2026-02-25T14:21:02.876Z"
+    },
+    {
+      "user": "Yes, confirm it",
+      "bot": "Done! Successfully executed: CANCEL_ORDER",
+      "timestamp": "2026-02-25T14:21:02.938Z"
+    },
+    {
+      "user": "What is your return policy?",
+      "bot": "I can help with cancellations and refunds. What would you like to do?",
+      "timestamp": "2026-02-25T14:21:02.993Z"
+    },
+    {
+      "user": "asdfghjkl",
+      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:21:03.054Z"
+    },
+    {
+      "user": "Hi!",
+      "bot": "Hey, welcome to UrbanWear! How's it going? We were just looking at the hoodie_001, a super comfy choice. What brings you here today?",
+      "timestamp": "2026-02-25T14:21:22.090Z"
+    },
+    {
+      "user": "Do you have a Classic Hoodie?",
+      "bot": "Yes, we do have the Classic Hoodie. It's a premium 100% cotton hoodie, priced at $19.99, and it's available in Black, Grey, and Blue, in sizes S to XL. We currently have 120 in stock. Would you like to know more?",
+      "timestamp": "2026-02-25T14:21:22.601Z"
+    },
+    {
+      "user": "Is it cotton?",
+      "bot": "Yes, the Classic Hoodie is made of 100% Cotton. Would you like to know more about it?",
+      "timestamp": "2026-02-25T14:21:23.116Z"
+    },
+    {
+      "user": "I want to cancel my order",
+      "bot": "You're looking to cancel your order for the hoodie_001. Just to confirm, you'll be cancelling the hoodie made from 100% cotton, priced at our standard rate. If that's correct, please type 'yes' to proceed with the cancellation.",
+      "timestamp": "2026-02-25T14:21:23.697Z"
+    },
+    {
+      "user": "Yes, confirm it",
+      "bot": "Your order for the hoodie_001 has been successfully cancelled. If you'd like to purchase it again or explore other options, feel free to let me know!",
+      "timestamp": "2026-02-25T14:21:24.294Z"
+    },
+    {
+      "user": "What is your return policy?",
+      "bot": "\"Hey, for the hoodie_001, you can return it within 30 days of delivery. Just make sure it's in original condition with tags. Want me to send the full return policy details?\"",
+      "timestamp": "2026-02-25T14:21:24.851Z"
+    },
+    {
+      "user": "asdfghjkl",
+      "bot": "I'm sorry, I'm still learning. It seems like you might have entered a random string. I can help you with: \n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
+      "timestamp": "2026-02-25T14:21:25.467Z"
+    }
+  ]
+}
