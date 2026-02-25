@@ -1,6 +1,11 @@
 [
   {
     "name": "ORDER_STATUS",
+    "priority": 2,
+    "humanName": "Check Order Status",
+    "context_boost": [
+      "order_related"
+    ],
     "patterns": [
       {
         "lang": "hi",
@@ -8,16 +13,21 @@
       },
       {
         "lang": "hi",
-        "regex": "order.*(kaha|status)"
+        "regex": "order.*(status|kaha)"
       },
       {
         "lang": "en",
-        "regex": "(where|track).*order"
+        "regex": "\\b(where|track|status|kaha)\\b.*(order)?"
       }
     ]
   },
   {
     "name": "ORDER_NEW",
+    "priority": 2,
+    "humanName": "Place New Order",
+    "context_boost": [
+      "ordering"
+    ],
     "patterns": [
       {
         "lang": "hi",
@@ -25,12 +35,17 @@
       },
       {
         "lang": "en",
-        "regex": "(want|place|buy).*order"
+        "regex": "\\b(buy|purchase|place.*order|order now)\\b.*(item|product|something)?"
       }
     ]
   },
   {
     "name": "PAYMENT",
+    "priority": 2,
+    "humanName": "Payment & Receipts",
+    "context_boost": [
+      "order_related"
+    ],
     "patterns": [
       {
         "lang": "hi",
@@ -44,6 +59,11 @@
   },
   {
     "name": "CANCEL_ORDER",
+    "priority": 2,
+    "humanName": "Cancel My Order",
+    "context_boost": [
+      "order_related"
+    ],
     "patterns": [
       {
         "lang": "hi",
@@ -52,6 +72,72 @@
       {
         "lang": "en",
         "regex": "cancel.*order"
+      }
+    ]
+  },
+  {
+    "name": "GREETING",
+    "priority": 1,
+    "humanName": "Greetings",
+    "context_boost": [],
+    "patterns": [
+      {
+        "lang": "en",
+        "regex": "^(hi|hello|hey|greetings)"
+      },
+      {
+        "lang": "hi",
+        "regex": "^(namaste|namaskar|hi|hello)"
+      }
+    ]
+  },
+  {
+    "name": "HELP",
+    "priority": 2,
+    "humanName": "Get Help",
+    "context_boost": [],
+    "patterns": [
+      {
+        "lang": "en",
+        "regex": "(help|support|assist)"
+      },
+      {
+        "lang": "hi",
+        "regex": "(help|madad|support)"
+      }
+    ]
+  },
+  {
+    "name": "PRICE_QUERY",
+    "priority": 2,
+    "humanName": "Check Price",
+    "context_boost": [
+      "ordering"
+    ],
+    "patterns": [
+      {
+        "lang": "en",
+        "regex": "(price|how much|cost).*(product|this)"
+      },
+      {
+        "lang": "hi",
+        "regex": "(price|daam|rate|kitna).*(hai|batao)"
+      }
+    ]
+  },
+  {
+    "name": "PRODUCT_CARE",
+    "priority": 2,
+    "humanName": "Product Care & Washing",
+    "context_boost": [],
+    "patterns": [
+      {
+        "lang": "en",
+        "regex": "\\b(wash|clean|care|iron|dry)\\b.*\\b(how|instruction|require|product|method)\\b"
+      },
+      {
+        "lang": "hi",
+        "regex": "\\b(dhona|dhone|saaf|care)\\b.*\\b(kaise|tarika|instruction)\\b"
       }
     ]
   }

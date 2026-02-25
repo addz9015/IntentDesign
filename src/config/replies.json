@@ -1,0 +1,57 @@
+{
+    "GREETING": [
+        "Hi 👋 Welcome! How can I assist you today?",
+        "Hello 😊 Thanks for reaching out. How can I help you?",
+        "Hey there! What can I do for you today?"
+    ],
+    "ORDER_NEW": [
+        "Sure 😊 Which product would you like to order?",
+        "Please tell me the product name so I can assist you.",
+        "I'd be happy to help you place an order. What would you like?"
+    ],
+    "PRICE_QUERY": [
+        "Please tell me the product name so I can share the price.",
+        "Which product's price would you like to know?",
+        "Let me know the product and I’ll provide the pricing details."
+    ],
+    "PAYMENT": [
+        "We accept UPI, debit/credit cards, and net banking.",
+        "You can pay using UPI or card. I can share the payment link.",
+        "Payment options include UPI and cards. Let me know if you'd like the link."
+    ],
+    "HELP": [
+        "I’m here to help 😊 Please tell me your concern.",
+        "Sure 👍 Could you explain your issue in a bit more detail?",
+        "No worries! Let me know how I can assist you."
+    ],
+    "ORDER_CONFIRM": [
+        "✅ Your order has been successfully placed!",
+        "🎉 Order confirmed! You’ll receive updates shortly.",
+        "Thank you! Your order is now confirmed."
+    ],
+    "PAYMENT_CONFIRM": [
+        "✅ Payment received successfully!",
+        "Thank you! Your payment has been confirmed.",
+        "Payment successful 👍 Your order is being processed."
+    ],
+    "ORDER_STATUS": [
+        "Your order is currently being processed. You can track it here: [TRACKING_LINK]",
+        "Checking your order status... It will reach you soon!",
+        "I'd be happy to help. Let me check the latest status of your order."
+    ],
+    "CANCEL_ORDER": [
+        "I'm sorry to hear that. Should I go ahead and cancel this order?",
+        "To cancel your order, please provide the Order ID.",
+        "Sure, I can help with cancellation. Please confirm if you want to proceed."
+    ],
+    "PRODUCT_CARE": [
+        "Most of our products are machine washable in cold water. Please check the label on the item for specific instructions!",
+        "For best results, we recommend hand washing or using a gentle cycle.",
+        "To keep the fabric looking new, avoid using bleach and dry in the shade."
+    ],
+    "UNKNOWN": [
+        "I’m sorry, I didn’t fully understand that. Could you please clarify?",
+        "Could you provide a little more detail so I can help you better?",
+        "I’m not sure I understood. Can you please explain again?"
+    ]
+}

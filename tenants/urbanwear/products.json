@@ -1,0 +1,55 @@
+[
+    {
+        "id": "hoodie_001",
+        "name": "Classic Hoodie",
+        "price": 1999,
+        "material": "100% Cotton",
+        "description": "A premium cotton hoodie for everyday comfort.",
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "colors": [
+            "Black",
+            "Grey",
+            "Blue"
+        ],
+        "stock": 120
+    },
+    {
+        "id": "jacket_001",
+        "name": "Windbreaker Jacket",
+        "price": 2499,
+        "material": "Polyester Blend",
+        "description": "Lightweight wind-resistant jacket.",
+        "sizes": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "colors": [
+            "Black",
+            "Red"
+        ],
+        "stock": 75
+    },
+    {
+        "id": "tshirt_001",
+        "name": "Premium T-Shirt",
+        "price": 999,
+        "material": "Cotton Blend",
+        "description": "Soft and breathable everyday t-shirt.",
+        "sizes": [
+            "S",
+            "M",
+            "L"
+        ],
+        "colors": [
+            "White",
+            "Black"
+        ],
+        "stock": 200
+    }
+]

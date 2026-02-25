@@ -1,80 +1,79 @@
-# Intent Engine
+# 🚀 Antigravity AI - WhatsApp AI Platform
 
-A lightweight, multilingual intent detection engine designed for chat applications (like WhatsApp). It uses regex-based matching to identify user intents from messages in English and Hindi/Hinglish.
+A multi-tenant, AI-powered WhatsApp assistant platform featuring semantic intent classification, session memory, guardrails, and real-time WhatsApp integration.
 
-## Features
+---
 
-- **Multilingual Support**: Detects intents in English and Hindi (Hinglish).
-- **Text Normalization**: Automatically cleans and normalizes user input before processing.
-- **Regex-based Matching**: Flexible pattern matching with specificity-based scoring.
-- **Intent Confidence**: Provides confidence levels (HIGH, MEDIUM, LOW) based on match quality.
-- **Extensible**: Easily add new intents and patterns via `src/config/intents.json`.
+## 🛠 Features
 
-## Project Structure
+- **Multi-Tenant Architecture**: Isolate data and config for different businesses (e.g., `UrbanWear`).
+- **Hybrid Brain**: Combines fast Regex (for local phrases) with Groq LLM (for semantic understanding).
+- **Session Memory**: Maintains context across messages (resolves "it", "this", etc.).
+- **Proactive Logic**: Automatically checks for payment dues and order stats.
+- **Live WhatsApp Integration**: Built-in Express server for Webhooks and Facebook Graph API.
+
+---
+
+## 📋 Setup Guide
+
+### 1. Prerequisite
+Ensure you have [Node.js](https://nodejs.org/) installed.
+
+### 2. Environment Configuration
+Create a `.env` file in the root directory and fill in the following:
+
+```env
+# Groq AI Key (Get it from console.groq.com)
+GROQ_API_KEY=your_groq_key_here
+
+# WhatsApp Webhook Verification Token (Your choice)
+VERIFY_TOKEN=your_custom_verify_token
+
+# WhatsApp Cloud API Credentials
+WHATSAPP_TOKEN=your_meta_access_token
+PHONE_NUMBER_ID=your_meta_phone_id
+```
+
+### 3. Installation
+```powershell
+npm install
+```
+
+### 4. Running the Platform
+
+#### 🎮 Interactive Demo (CLI)
+Test the "brain" locally in your terminal:
+```powershell
+npm run interactive
+```
+
+#### 🌐 Live Server (WhatsApp Webhook)
+Start the server to receive real WhatsApp messages:
+```powershell
+npm run serve
+```
+*Note: Use a tool like **ngrok** to expose your local port 5000 to the internet.*
+
+---
+
+## 🏗 Project Structure
 
 ```text
-intent-engine/
-├── src/
-│   ├── config/            # Intent configurations (JSON)
-│   ├── detector/          # Core intent detection logic
-│   ├── normalizer/        # Text cleaning and normalization
-│   ├── utils/             # Helper functions
-│   └── index.js           # Main entry point and manual testers
-├── tests/                 # Unit tests (Jest)
-└── package.json           # Scripts and dependencies
+tenants/
+  └── urbanwear/         # Business-specific data
+      ├── config.json    # Settings (tone, currency, etc)
+      ├── products.json  # Catalog for RAG
+      └── customers.json # Database (Auto-updated)
+src/
+  ├── server.js          # Express Webhook Server
+  ├── router.js          # Core Orchestrator
+  ├── intentClassifier.js# Hybrid AI Brain
+  ├── customerService.js # CRM & VIP Logic
+  └── whatsappService.js # API Connector
 ```
 
-## Getting Started
+---
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v14 or higher recommended)
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/addz9015/IntentDesign.git
-   cd intent-engine
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-### Usage
-
-You can run the engine with a few demo messages:
-
-```bash
-npm start
-```
-
-Or use it in your own code:
-
-```javascript
-const processMessage = require('./src/index');
-
-const result = processMessage("mera order kaha hai");
-console.log(result);
-// Output: { intent: 'ORDER_STATUS', language: 'hi', confidence: 'MEDIUM', ... }
-```
-
-### Running Tests
-
-To run the unit tests and view coverage:
-
-```bash
-npm test
-```
-
-## Contributing
-
-1. Add new intents/patterns to `src/config/intents.json`.
-2. Ensure patterns are specific enough to avoid false positives.
-3. Run tests before submitting changes.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🛡 Guardrails
+- **Transactional Confirmation**: Cancellations and refunds require a high-confidence "Yes" from the user before executing.
+- **Safety Fallback**: If the AI API fails, the bot automatically switches to rule-based logic to maintain stability.

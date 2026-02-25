@@ -1,0 +1,22 @@
+{
+  "919876543210": {
+    "name": "Advika",
+    "status": "active",
+    "amount_due": 1500,
+    "orders_placed": 2,
+    "tags": [
+      "loyal"
+    ],
+    "joined_at": "2026-01-01T10:00:00Z"
+  },
+  "cli_user_123": {
+    "name": "New Customer",
+    "status": "active",
+    "amount_due": 0,
+    "orders_placed": 0,
+    "tags": [
+      "new"
+    ],
+    "joined_at": "2026-02-25T15:29:00.765Z"
+  }
+}

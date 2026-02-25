@@ -1,0 +1,13 @@
+{
+    "business_name": "UrbanWear",
+    "tone": "friendly",
+    "currency": "INR",
+    "supported_languages": [
+        "en",
+        "hi"
+    ],
+    "confirmation_required_for": [
+        "CANCEL_ORDER",
+        "REFUND"
+    ]
+}
