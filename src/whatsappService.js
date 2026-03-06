@@ -14,7 +14,7 @@ class WhatsAppService {
             return;
         }
 
-        const url = `https://graph.facebook.com/v17.0/${phoneId}/messages`;
+        const url = `https://graph.facebook.com/v22.0/${phoneId}/messages`;
 
         const payload = {
             messaging_product: "whatsapp",
@@ -33,7 +33,8 @@ class WhatsAppService {
             console.log(`✅ SENT to ${toPhone}: ${messageText}`);
             return response.data;
         } catch (error) {
-            console.error(`❌ FAILED to send to ${toPhone}:`, error.response ? error.response.data : error.message);
+            const errorData = error.response ? error.response.data : error.message;
+            console.error(`❌ FAILED to send to ${toPhone}:`, JSON.stringify(errorData, null, 2));
             throw error;
         }
     }

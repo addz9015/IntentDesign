@@ -16,6 +16,13 @@ async function routeRequest(message, session, config) {
     const classification = await IntentClassifier.classify(message, session);
     const intent = classification.intent_type;
 
+    // 2. Detect rejection — if user says no, clear product context so it's not pushed again
+    const lowerMsg = message.toLowerCase().trim();
+    const isRejection = /\b(no|nope|nahi|not interested|don't want|dont want|skip|nevermind|never mind)\b/.test(lowerMsg);
+    if (isRejection && session.last_product) {
+        session.last_product = null;
+    }
+
     // 2. Proactive Customer Check (Teammate Logic)
     // If user is just greeting or asking for help, check if they have dues
     let proactiveData = null;
@@ -54,7 +61,7 @@ async function routeRequest(message, session, config) {
     }
 
     // 5. Generate natural response via AI
-    const naturalResponse = await ResponseGenerator.generate(message, responseData, session, config);
+    const naturalResponse = await ResponseGenerator.generate(message, responseData, session, config, responseData.products);
 
     return {
         intent,

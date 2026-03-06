@@ -22,6 +22,7 @@ class SessionManager {
             last_product: null,
             pending_action: null,
             last_intent: null,
+            memory_summary: '',  // Rolling summary of the conversation (not raw history)
             history: []
         };
     }

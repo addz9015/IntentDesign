@@ -9,6 +9,10 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 5000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
+if (!VERIFY_TOKEN) {
+    console.error("❌ ERROR: VERIFY_TOKEN is not set in .env!");
+}
+
 /**
  * GET Webhook Verification
  * Ported from teammate's Flask logic
@@ -23,6 +27,7 @@ app.get('/webhook', (req, res) => {
             console.log('✅ WEBHOOK_VERIFIED');
             return res.status(200).send(challenge);
         } else {
+            console.warn(`⚠️ Webhook verification failed. Received token: ${token}, expected: ${VERIFY_TOKEN}`);
             return res.sendStatus(403);
         }
     }
