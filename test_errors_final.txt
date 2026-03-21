@@ -1,0 +1,155 @@
+
+> intent-engine@1.0.0 test
+> jest --coverage
+
+FAIL tests/intent.test.js
+  ● Intent Detection – Regex Based › Hindi ORDER_STATUS intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "hi"
+    Received: "en"
+
+    [0m [90m  5 |[39m     [36mconst[39m result [33m=[39m detectIntent([32m"mera order kaha hai"[39m)[33m;[39m
+     [90m  6 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_STATUS"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m  7 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"hi"[39m)[33m;[39m
+     [90m    |[39m                             [31m[1m^[22m[39m
+     [90m  8 |[39m   })[33m;[39m
+     [90m  9 |[39m
+     [90m 10 |[39m   test([32m"English ORDER_STATUS intent"[39m[33m,[39m () [33m=>[39m {[0m
+
+      at Object.toBe (tests/intent.test.js:7:29)
+
+FAIL tests/detectIntent.test.js
+  ● Intent Engine Quality Gate › Should fallback to fuzzy matching
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "FUZZY"
+    Received: "REGEX"
+
+    [0m [90m 31 |[39m     test([32m'Should fallback to fuzzy matching'[39m[33m,[39m () [33m=>[39m {
+     [90m 32 |[39m         [36mconst[39m result [33m=[39m detectIntent([32m"Check my status"[39m)[33m;[39m [90m// Missing words, should trigger fuzzy word match[39m
+    [31m[1m>[22m[39m[90m 33 |[39m         expect(result[33m.[39mmatched_by)[33m.[39mtoBe([32m"FUZZY"[39m)[33m;[39m
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 34 |[39m         expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_STATUS"[39m)[33m;[39m
+     [90m 35 |[39m     })[33m;[39m
+     [90m 36 |[39m[0m
+
+      at Object.toBe (tests/detectIntent.test.js:33:35)
+
+FAIL tests/platform_integration.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (6) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      Running Integration Tests...
+
+      at Object.log (tests/platform_integration.test.js:5:17)
+
+    console.log
+      Test 1: Greeting
+
+      at Object.log (tests/platform_integration.test.js:10:17)
+
+  ● Integration Tests › testFlows
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: "urbanwear"
+    Received string:    "😊 hi, how's your day going?"
+
+    [0m [90m 10 |[39m         console[33m.[39mlog([32m"Test 1: Greeting"[39m)[33m;[39m
+     [90m 11 |[39m         [36mconst[39m r1 [33m=[39m [36mawait[39m handleWhatsAppMessage(user[33m,[39m [32m"Hello"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 12 |[39m         expect(r1[33m.[39mtext[33m.[39mtoLowerCase())[33m.[39mtoContain([32m'urbanwear'[39m)[33m;[39m
+     [90m    |[39m                                       [31m[1m^[22m[39m
+     [90m 13 |[39m
+     [90m 14 |[39m         [90m// Test 2: Product Query & Context[39m
+     [90m 15 |[39m         console[33m.[39mlog([32m"Test 2: Product Context"[39m)[33m;[39m[0m
+
+      at Object.toContain (tests/platform_integration.test.js:12:39)
+
+PASS tests/integration_merge.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (6) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      🚀 Running Merged Integration Tests (Teammate Merge)...
+
+      at Object.log (tests/integration_merge.test.js:7:17)
+
+    console.log
+      
+      Test 1: Hindi Regex Detection
+
+      at Object.log (tests/integration_merge.test.js:13:17)
+
+    console.log
+      Bot Response: अभी तक आपका ऑर्डर पेंडिंग है, क्या आप अपने T-शर्ट के लिए साइज़ और रंग चुनना चाहते हैं? 🛍️
+
+      at Object.log (tests/integration_merge.test.js:16:17)
+
+    console.log
+      
+      Test 2: VIP Promotion Logic
+
+      at Object.log (tests/integration_merge.test.js:20:17)
+
+    console.log
+      ✅ VIP Promotion Successful!
+
+      at Object.log (tests/integration_merge.test.js:33:21)
+
+    console.log
+      
+      Merged Tests Completed!
+
+      at Object.log (tests/integration_merge.test.js:38:17)
+
+-----------------------|---------|----------|---------|---------|-------------------------------------------------
+File                   | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                               
+-----------------------|---------|----------|---------|---------|-------------------------------------------------
+All files              |   46.19 |    33.15 |    49.2 |   47.41 |                                                 
+ src                   |   39.65 |     28.9 |      40 |   40.81 |                                                 
+  customerService.js   |   22.03 |    21.95 |    37.5 |   23.21 | 14-16,35-56,65-71,78-171                        
+  fallbackEngine.js    |   28.57 |        0 |       0 |   28.57 | 13-37                                           
+  index.js             |   39.18 |       45 |      50 |   39.18 | 28-39,46-56,62-71,77-98,115,132,140-141,150-170 
+  intentClassifier.js  |   56.66 |    36.61 |   66.66 |   57.62 | 26,39,48,59,76,92-127,161-178                   
+  knowledgeEngine.js   |   16.21 |       10 |   17.64 |   17.18 | 19,34-158                                       
+  memoryManager.js     |   72.72 |       50 |     100 |   72.72 | 50-54                                           
+  responseGenerator.js |   52.17 |    34.88 |   57.14 |   53.84 | 17-24,28-32,38-40,113-115,124,184-209           
+  router.js            |      76 |    61.53 |     100 |      76 | 21-22,31,37,57-58                               
+  sessionManager.js    |   66.66 |       50 |   66.66 |   66.66 | 19,42,48-50                                     
+  supabaseClient.js    |    87.5 |    54.54 |     100 |    87.5 | 8                                               
+  tenantResolver.js    |    87.5 |       50 |     100 |    87.5 | 19                                              
+  transactionEngine.js |    7.14 |        0 |       0 |    7.14 | 10-120                                          
+ src/detector          |   94.28 |    86.95 |   83.33 |   96.87 |                                                 
+  detectIntent.js      |   94.28 |    86.95 |   83.33 |   96.87 | 57                                              
+ src/utils             |    87.5 |       50 |   85.71 |    93.1 |                                                 
+  fuzzyMatch.js        |   86.95 |    55.55 |   83.33 |      95 | 40                                              
+  unknownlogger.js     |   88.88 |    33.33 |     100 |   88.88 | 20                                              
+-----------------------|---------|----------|---------|---------|-------------------------------------------------
+
+Test Suites: 3 failed, 1 passed, 4 total
+Tests:       3 failed, 12 passed, 15 total
+Snapshots:   0 total
+Time:        5.508 s
+Ran all test suites.

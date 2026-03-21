@@ -1,0 +1,21 @@
+{
+  "session_id": "mujhe order chahiye",
+  "tenant_id": "urbanwear",
+  "last_product": null,
+  "rejected_products": [],
+  "rejected_product_names": [],
+  "browsing_declined_count": 0,
+  "pending_action": null,
+  "last_intent": null,
+  "memory_summary": "",
+  "history": [],
+  "order_size": null,
+  "order_color": null,
+  "is_returning_customer": false,
+  "previous_orders": [],
+  "previous_orders_loaded": true,
+  "greeting_shown": false,
+  "last_product_name": null,
+  "customer_id": "cust_f6c66f48",
+  "customer_name": "New Customer"
+}

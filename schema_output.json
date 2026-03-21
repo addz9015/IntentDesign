@@ -1,0 +1,23 @@
+{
+  "customers": [
+    {
+      "customer_id": "cust_223b521d",
+      "name": "Priya Sharma",
+      "phone": "+91-9876543210",
+      "tag": "repeat",
+      "created_at": "2025-10-31"
+    }
+  ],
+  "payments": [
+    {
+      "payment_id": "pay_24410f92",
+      "customer_id": "cust_223b521d",
+      "amount_cents": 250000,
+      "due_date": "2025-11-30",
+      "status": "paid",
+      "last_reminded": null,
+      "created_at": "2025-10-31",
+      "paid_at": "2025-11-28"
+    }
+  ]
+}

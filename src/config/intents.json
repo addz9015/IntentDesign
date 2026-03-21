@@ -17,7 +17,7 @@
       },
       {
         "lang": "en",
-        "regex": "\\b(where|track|status|kaha)\\b.*(order)?"
+        "regex": "\\b(where|track|status)\\b.*(order)?"
       }
     ]
   },

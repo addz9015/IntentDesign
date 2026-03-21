@@ -16,6 +16,70 @@ class IntentClassifier {
     static async classify(message, session) {
         // Level 1: Fast Regex Pre-check (Teammate's logic)
         const localIntent = this.checkLocalRegex(message);
+
+        // Fast-path: If an action is pending, treat confirmations/rejections as TRANSACTIONAL
+        const lower = message.toLowerCase().trim();
+        const isConfirmation = /^(yes|ha|sure|confirm|ok|okay|pl|place|do it|go ahead|yep|yup)$/.test(lower) || lower.includes('confirm') || lower.includes('place order');
+        const isRejection = /^(no|nope|nahi|cancel|stop|dont|don't)$/.test(lower) || lower.includes('cancel');
+
+        if (session.pending_action && (isConfirmation || isRejection)) {
+            return {
+                intent_type: 'TRANSACTIONAL',
+                confidence: 'HIGH',
+                source: 'state_shortcut'
+            };
+        }
+
+        const isSimpleAffirmation = /^(yes|yeah|yep|yup|sure|ok|okay|correct|right|haan|ha|theek)$/i.test(lower);
+        const isSimpleRejection = /^(no|nope|nahi|na)$/i.test(lower);
+
+        // Fast-path: "yes/ok/sure" with a product in context → user wants to order
+        // Route to TRANSACTIONAL so TransactionEngine can set pending_action = NEW_ORDER
+        if (!session.pending_action && isSimpleAffirmation && session.last_product) {
+            return {
+                intent_type: 'TRANSACTIONAL',
+                confidence: 'HIGH',
+                source: 'state_shortcut'
+            };
+        }
+
+        // Fast-path: "no" during a product conversation → KnowledgeEngine handles the rejection
+        if (!session.pending_action && isSimpleRejection && session.last_intent === 'PRODUCT_QUERY') {
+            return {
+                intent_type: 'PRODUCT_QUERY',
+                confidence: 'HIGH',
+                source: 'state_shortcut'
+            };
+        }
+
+        // Fast-path: explicit size or color answer — always route to PRODUCT_QUERY when product is in context
+        const isSizeAnswer = /^(xs|s|m|l|xl|xxl)$/i.test(lower.trim());
+        const isColorAnswer = /^(black|grey|gray|blue|white|red|green|yellow|pink|navy|maroon|brown|orange)$/i.test(lower.trim());
+        if (session.last_product && (isSizeAnswer || isColorAnswer)) {
+            return {
+                intent_type: 'PRODUCT_QUERY',
+                confidence: 'HIGH',
+                source: 'state_shortcut'
+            };
+        }
+
+        // Fast-path: short follow-up during a product conversation (size: "S", "M"; color: "blue"; etc.)
+        // Excludes affirmations/rejections already handled above
+        const words = lower.split(/\s+/);
+        if (
+            session.last_product &&
+            !session.pending_action &&
+            words.length <= 3 &&
+            !isSimpleAffirmation &&
+            !isSimpleRejection
+        ) {
+            return {
+                intent_type: 'PRODUCT_QUERY',
+                confidence: 'HIGH',
+                source: 'state_shortcut'
+            };
+        }
+
         if (localIntent && localIntent !== 'UNKNOWN') {
             return {
                 intent_type: localIntent,
@@ -65,7 +129,8 @@ class IntentClassifier {
     }
 
     static checkLocalRegex(message) {
-        const cleanText = message.toLowerCase().trim();
+        if (!message) return "UNKNOWN";
+        const cleanText = String(message).toLowerCase().trim();
         let bestMatch = { intent: "UNKNOWN", score: 0 };
 
         for (const intent of INTENT_PATTERNS) {

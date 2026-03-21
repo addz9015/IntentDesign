@@ -1,0 +1,71 @@
+{
+  "session_id": "919820125241",
+  "tenant_id": "urbanwear",
+  "last_product": "hoodie_001",
+  "last_product_name": "Classic Hoodie",
+  "rejected_products": [],
+  "rejected_product_names": [],
+  "browsing_declined_count": 0,
+  "pending_action": null,
+  "last_intent": "SMALL_TALK",
+  "memory_summary": "• Product(s) mentioned: None\n• User interest level: Neutral\n• Pending actions: None\n• User preferences: None",
+  "history": [
+    {
+      "user": "Yes",
+      "bot": "Your Classic Hoodie is medium size and grey color, right? 💬 Should I proceed with payment via UPI for this order? 📈",
+      "timestamp": "2026-03-08T09:45:40.190Z"
+    },
+    {
+      "user": "Yes",
+      "bot": "Your Classic Hoodie (Medium, Grey) is ready to be paid for. Would you like to pay via UPI now? 🛍️💸",
+      "timestamp": "2026-03-08T09:45:49.039Z"
+    },
+    {
+      "user": "Hi",
+      "bot": "😊 How can I help you today?",
+      "timestamp": "2026-03-08T09:45:53.013Z"
+    },
+    {
+      "user": "I have paid",
+      "bot": "👍 Your UPI payment for the Classic Hoodie is confirmed, we'll process your order now. 😊",
+      "timestamp": "2026-03-08T09:46:00.329Z"
+    },
+    {
+      "user": "Hey",
+      "bot": "😊 How's your day going? Need any help with clothing? 👕",
+      "timestamp": "2026-03-08T10:00:15.993Z"
+    },
+    {
+      "user": "HI",
+      "bot": "😊 Hi! How can I help you with UrbanWear today? 👋",
+      "timestamp": "2026-03-08T11:43:34.031Z"
+    },
+    {
+      "user": "Hi",
+      "bot": "😊 Hi there! How can I help you today? 👋",
+      "timestamp": "2026-03-08T11:44:42.877Z"
+    },
+    {
+      "user": "Hey",
+      "bot": "😊 Hi! How can I help you today?",
+      "timestamp": "2026-03-08T11:47:50.112Z"
+    },
+    {
+      "user": "Hi",
+      "bot": "😊 Hello! How can I help you today?",
+      "timestamp": "2026-03-08T11:48:15.672Z"
+    },
+    {
+      "user": "Hi",
+      "bot": "😊 Hi, how can I help you today?",
+      "timestamp": "2026-03-08T11:52:48.958Z"
+    }
+  ],
+  "order_size": null,
+  "order_color": null,
+  "is_returning_customer": false,
+  "previous_orders": [],
+  "previous_orders_loaded": false,
+  "customer_id": "cust_08263425",
+  "customer_name": "New Customer"
+}

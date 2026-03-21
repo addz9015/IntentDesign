@@ -1,87 +1,107 @@
-const fs = require('fs');
-const path = require('path');
+const supabase = require('./supabaseClient');
 
 /**
  * Customer Service Module
- * Ported from teammate's Python implementation.
- * Handles customer profiles, VIP tagging, and payment dues.
+ * Handles customer profiles, VIP tagging, and payment dues via Supabase.
  */
 class CustomerService {
-    static getDbPath(tenantId) {
-        return path.join(__dirname, '..', 'tenants', tenantId, 'customers.json');
-    }
-
-    static loadDb(tenantId) {
-        const filePath = this.getDbPath(tenantId);
-        try {
-            if (fs.existsSync(filePath)) {
-                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    // Normalize phone to format '+91-XXXXX' to match database format
+    static normalizePhone(phone) {
+        if (!phone.includes('+')) {
+            if (phone.length === 12 && phone.startsWith('91')) {
+                return `+91-${phone.substring(2)}`;
             }
-        } catch (e) {
-            console.error(`Error loading customers for ${tenantId}:`, e);
+            return `+${phone}`;
         }
-        return {};
+        return phone;
     }
 
-    static saveDb(tenantId, data) {
-        const filePath = this.getDbPath(tenantId);
-        const dir = path.dirname(filePath);
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    }
+    static async getOrCreateCustomer(tenantId, phone) {
+        const normalizedPhone = this.normalizePhone(phone);
 
-    static getOrCreateCustomer(tenantId, phone) {
-        const db = this.loadDb(tenantId);
+        // 1. Try to fetch customer
+        const { data, error } = await supabase
+            .from('app_customers')
+            .select('*')
+            .eq('phone', normalizedPhone)
+            .single();
 
-        if (!db[phone]) {
-            db[phone] = {
-                name: "New Customer",
-                status: "active",
-                amount_due: 0,
-                orders_placed: 0,
-                tags: ["new"],
-                joined_at: new Date().toISOString()
-            };
-            this.saveDb(tenantId, db);
-            console.log(`🆕 NEW CUSTOMER ADDED TO ${tenantId}: ${phone}`);
+        if (data && !error) {
+            return data;
         }
 
-        return db[phone];
+        // 2. Create customer if not found
+        // Use a simple ID generation for cust_...
+        const newCustomerId = `cust_${Math.random().toString(16).slice(2, 10)}`;
+        const newCustomer = {
+            customer_id: newCustomerId,
+            tenant_id: tenantId,
+            name: 'New Customer',
+            phone: normalizedPhone,
+            tag: 'new'
+        };
+
+        const { data: inserted, error: insertError } = await supabase
+            .from('app_customers')
+            .insert([newCustomer])
+            .select()
+            .single();
+
+        if (insertError) {
+            console.error('Error creating customer in Supabase:', insertError);
+            return newCustomer; // Fallback to memory object
+        }
+
+        console.log(`🆕 NEW CUSTOMER ADDED TO SUPABASE: ${normalizedPhone}`);
+        return inserted;
     }
 
-    static updateOrderStats(tenantId, phone) {
-        const db = this.loadDb(tenantId);
+    static async updateOrderStats(tenantId, phone) {
+        const customer = await this.getOrCreateCustomer(tenantId, phone);
+        if (!customer.customer_id) return null;
 
-        if (db[phone]) {
-            db[phone].orders_placed += 1;
-            db[phone].last_order_date = new Date().toISOString();
+        // Promote "new" customers to "frequent"
+        if (customer.tag === 'new') {
+            const { error } = await supabase
+                .from('app_customers')
+                .update({ tag: 'frequent' })
+                .eq('customer_id', customer.customer_id);
 
-            // VIP Logic: Orders >= 3
-            if (db[phone].orders_placed >= 3) {
-                if (!db[phone].tags.includes("vip")) {
-                    db[phone].tags.push("vip");
-                    console.log(`⭐ CUSTOMER ${phone} PROMOTED TO VIP IN ${tenantId}`);
-                }
+            if (!error) {
+                console.log(`⭐ CUSTOMER ${phone} PROMOTED TO FREQUENT`);
             }
-
-            this.saveDb(tenantId, db);
-            return db[phone];
         }
-        return null;
+        return customer;
     }
 
-    static checkPaymentStatus(tenantId, phone) {
-        const customer = this.getOrCreateCustomer(tenantId, phone);
+    static async checkPaymentStatus(tenantId, phone) {
+        const customer = await this.getOrCreateCustomer(tenantId, phone);
         const name = customer.name || "Customer";
-        const due = customer.amount_due || 0;
 
-        if (due > 0) {
+        // Query pending payments for this customer
+        const { data: payments, error } = await supabase
+            .from('app_payments')
+            .select('amount_cents, status')
+            .eq('customer_id', customer.customer_id)
+            .eq('status', 'pending');
+
+        if (error) {
+            console.error('Error fetching payments:', error);
+            return { has_due: false, due_amount: 0, message: '' };
+        }
+
+        let totalDueCents = 0;
+        if (payments && payments.length > 0) {
+            totalDueCents = payments.reduce((sum, p) => sum + p.amount_cents, 0);
+        }
+
+        const dueAmountRs = totalDueCents / 100;
+
+        if (dueAmountRs > 0) {
             return {
                 has_due: true,
-                due_amount: due,
-                message: `Hi ${name}, you have a pending payment of ₹${due}. Please pay via UPI.`
+                due_amount: dueAmountRs,
+                message: `Hi ${name}, you have a pending payment of ₹${dueAmountRs}. Please pay via UPI.`
             };
         } else {
             return {
@@ -90,6 +110,64 @@ class CustomerService {
                 message: `Hi ${name}, no pending dues! Thanks for being a loyal customer.`
             };
         }
+    }
+
+    static async getRecentOrders(customerId, limit = 3) {
+        const { data, error } = await supabase
+            .from('app_payments')
+            .select('*')
+            .eq('customer_id', customerId)
+            .eq('status', 'paid')
+            .order('paid_at', { ascending: false })
+            .limit(limit);
+
+        if (error || !data) return [];
+        return data;
+    }
+
+    static async createPayment(tenantId, customerId, amountCents, productId = null, productName = null) {
+        // Generate unique payment ID
+        const paymentId = `pay_${Math.random().toString(16).slice(2, 10)}`;
+
+        const newPayment = {
+            payment_id: paymentId,
+            tenant_id: tenantId,
+            customer_id: customerId,
+            amount_cents: amountCents,
+            product_name: productName,
+            status: 'pending'
+        };
+
+        const { data, error } = await supabase
+            .from('app_payments')
+            .insert([newPayment])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error creating payment:', error);
+            return null;
+        }
+
+        console.log(`💳 Created pending payment ${paymentId} for ${customerId}`);
+        return data;
+    }
+
+    static async updatePaymentStatus(paymentId, status) {
+        const { data, error } = await supabase
+            .from('app_payments')
+            .update({ status: status, paid_at: status === 'paid' ? new Date().toISOString() : null })
+            .eq('payment_id', paymentId)
+            .select()
+            .single();
+
+        if (error) {
+            console.error(`Error updating payment ${paymentId}:`, error);
+            return false;
+        }
+
+        console.log(`✅ Payment ${paymentId} marked as ${status}`);
+        return true;
     }
 }
 

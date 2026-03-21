@@ -48,15 +48,49 @@ app.post('/webhook', async (req, res) => {
                         const message = value.messages[0];
                         const from = message.from;
 
+                        let text = "";
+
+                        // Handle standard text messages
                         if (message.type === 'text') {
-                            const text = message.text.body;
+                            text = message.text.body;
+                        }
+                        // Handle Interactive button clicks
+                        else if (message.type === 'interactive' && message.interactive.type === 'button_reply') {
+                            const buttonId = message.interactive.button_reply.id;
+                            console.log(`🔘 Button Clicked: ${buttonId}`);
+
+                            // Process payment button callbacks
+                            if (buttonId.startsWith('PAID_')) {
+                                const paymentId = buttonId.replace('PAID_', '');
+                                const CustomerService = require('./customerService');
+                                await CustomerService.updatePaymentStatus(paymentId, 'paid');
+                                // Send confirmation directly — no AI needed
+                                console.log(`✅ Payment confirmed for ${from}, sending confirmation`);
+                                await WhatsAppService.sendMessage(from,
+                                    `✅ *Payment Confirmed!*\n\nYour order has been successfully placed. 🎉\n\nThank you for shopping with us! We hope to see you again soon.\n\n*Happy Shopping!* 🛍️`
+                                );
+                                continue; // Skip AI processing for this message
+                            } else if (buttonId.startsWith('CANCEL_')) {
+                                const paymentId = buttonId.replace('CANCEL_', '');
+                                const CustomerService = require('./customerService');
+                                await CustomerService.updatePaymentStatus(paymentId, 'cancelled');
+                                text = "I want to cancel my order";
+                            }
+                        }
+
+                        if (text) {
                             console.log(`📥 Received from ${from}: ${text}`);
 
                             // 1. Process through our AI Multi-Tenant Engine
-                            const replyText = await handleWhatsAppMessage(from, text);
+                            const reply = await handleWhatsAppMessage(from, text);
 
                             // 2. Send back via real WhatsApp API
-                            await WhatsAppService.sendMessage(from, replyText);
+                            await WhatsAppService.sendMessage(from, reply.text);
+
+                            // 3. Send Interactive Payload if one exists
+                            if (reply.interactive && reply.interactive.type === 'INTERACTIVE_PAYMENT') {
+                                await WhatsAppService.sendInteractivePaymentMessage(from, reply.interactive.amount_cents, reply.interactive.payment_id);
+                            }
                         }
                     }
                 }

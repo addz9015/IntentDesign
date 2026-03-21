@@ -1,0 +1,505 @@
+
+> intent-engine@1.0.0 test
+> jest --coverage --no-coverage
+
+FAIL tests/detectIntent.test.js
+  ● Intent Engine Quality Gate › Should match simple English order status
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "MEDIUM"
+    Received: "HIGH"
+
+    [0m [90m  6 |[39m         [36mconst[39m result [33m=[39m detectIntent([32m"where is my order"[39m)[33m;[39m
+     [90m  7 |[39m         expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_STATUS"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m  8 |[39m         expect(result[33m.[39mconfidence)[33m.[39mtoBe([32m"MEDIUM"[39m)[33m;[39m
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m     })[33m;[39m
+     [90m 10 |[39m
+     [90m 11 |[39m     test([32m'Should match Hindi order status'[39m[33m,[39m () [33m=>[39m {[0m
+
+      at Object.toBe (tests/detectIntent.test.js:8:35)
+
+  ● Intent Engine Quality Gate › Should apply context boost
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "CANCEL_ORDER"
+    Received: "UNKNOWN"
+
+    [0m [90m 26 |[39m         [90m// Let's test with 'cancel' which is in 'order_related' group[39m
+     [90m 27 |[39m         [36mconst[39m resultWithContext [33m=[39m detectIntent([32m"cancel"[39m[33m,[39m { active_labels[33m:[39m [[32m'order_related'[39m] })[33m;[39m
+    [31m[1m>[22m[39m[90m 28 |[39m         expect(resultWithContext[33m.[39mintent)[33m.[39mtoBe([32m"CANCEL_ORDER"[39m)[33m;[39m
+     [90m    |[39m                                          [31m[1m^[22m[39m
+     [90m 29 |[39m     })[33m;[39m
+     [90m 30 |[39m
+     [90m 31 |[39m     test([32m'Should fallback to fuzzy matching for typos'[39m[33m,[39m () [33m=>[39m {[0m
+
+      at Object.toBe (tests/detectIntent.test.js:28:42)
+
+  ● Intent Engine Quality Gate › Should fallback to fuzzy matching for typos
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "FUZZY"
+    Received: "NONE"
+
+    [0m [90m 31 |[39m     test([32m'Should fallback to fuzzy matching for typos'[39m[33m,[39m () [33m=>[39m {
+     [90m 32 |[39m         [36mconst[39m result [33m=[39m detectIntent([32m"statur"[39m)[33m;[39m [90m// typo of status in humanName "Check Order Status"[39m
+    [31m[1m>[22m[39m[90m 33 |[39m         expect(result[33m.[39mmatched_by)[33m.[39mtoBe([32m"FUZZY"[39m)[33m;[39m
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 34 |[39m         expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_STATUS"[39m)[33m;[39m
+     [90m 35 |[39m     })[33m;[39m
+     [90m 36 |[39m[0m
+
+      at Object.toBe (tests/detectIntent.test.js:33:35)
+
+FAIL tests/integration_merge.test.js
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+FAIL tests/platform_integration.test.js
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+FAIL tests/intent.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (6) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      [dotenv@17.3.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      🔄 New conversation detected for mera order kaha hai — browsing state reset
+
+      at log (src/index.js:39:15)
+
+    console.log
+      🔄 New conversation detected for where is my order — browsing state reset
+
+      at log (src/index.js:39:15)
+
+    console.log
+      🔄 New conversation detected for mujhe order chahiye — browsing state reset
+
+      at log (src/index.js:39:15)
+
+    console.log
+      🔄 New conversation detected for I want to place an order — browsing state reset
+
+      at log (src/index.js:39:15)
+
+    console.log
+      🔄 New conversation detected for payment ho gaya — browsing state reset
+
+      at log (src/index.js:39:15)
+
+    console.log
+      🔄 New conversation detected for cancel my order — browsing state reset
+
+      at log (src/index.js:39:15)
+
+    console.log
+      🔄 New conversation detected for asdfghjkl — browsing state reset
+
+      at log (src/index.js:39:15)
+
+  ● Intent Detection – Regex Based › Hindi ORDER_STATUS intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "ORDER_STATUS"
+    Received: undefined
+
+    [0m [90m 4 |[39m   test([32m"Hindi ORDER_STATUS intent"[39m[33m,[39m () [33m=>[39m {
+     [90m 5 |[39m     [36mconst[39m result [33m=[39m processMessage([32m"mera order kaha hai"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 6 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_STATUS"[39m)[33m;[39m
+     [90m   |[39m                           [31m[1m^[22m[39m
+     [90m 7 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"hi"[39m)[33m;[39m
+     [90m 8 |[39m   })[33m;[39m
+     [90m 9 |[39m[0m
+
+      at Object.toBe (tests/intent.test.js:6:27)
+
+  ● Intent Detection – Regex Based › English ORDER_STATUS intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "ORDER_STATUS"
+    Received: undefined
+
+    [0m [90m 10 |[39m   test([32m"English ORDER_STATUS intent"[39m[33m,[39m () [33m=>[39m {
+     [90m 11 |[39m     [36mconst[39m result [33m=[39m processMessage([32m"where is my order"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 12 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_STATUS"[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 13 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"en"[39m)[33m;[39m
+     [90m 14 |[39m   })[33m;[39m
+     [90m 15 |[39m[0m
+
+      at Object.toBe (tests/intent.test.js:12:27)
+
+  ● Intent Detection – Regex Based › Hindi ORDER_NEW intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "ORDER_NEW"
+    Received: undefined
+
+    [0m [90m 16 |[39m   test([32m"Hindi ORDER_NEW intent"[39m[33m,[39m () [33m=>[39m {
+     [90m 17 |[39m     [36mconst[39m result [33m=[39m processMessage([32m"mujhe order chahiye"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 18 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_NEW"[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 19 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"hi"[39m)[33m;[39m
+     [90m 20 |[39m   })[33m;[39m
+     [90m 21 |[39m[0m
+
+      at Object.toBe (tests/intent.test.js:18:27)
+
+  ● Intent Detection – Regex Based › English ORDER_NEW intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "ORDER_NEW"
+    Received: undefined
+
+    [0m [90m 22 |[39m   test([32m"English ORDER_NEW intent"[39m[33m,[39m () [33m=>[39m {
+     [90m 23 |[39m     [36mconst[39m result [33m=[39m processMessage([32m"I want to place an order"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 24 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_NEW"[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 25 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"en"[39m)[33m;[39m
+     [90m 26 |[39m   })[33m;[39m
+     [90m 27 |[39m[0m
+
+      at Object.toBe (tests/intent.test.js:24:27)
+
+  ● Intent Detection – Regex Based › Hindi PAYMENT intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "PAYMENT"
+    Received: undefined
+
+    [0m [90m 28 |[39m   test([32m"Hindi PAYMENT intent"[39m[33m,[39m () [33m=>[39m {
+     [90m 29 |[39m     [36mconst[39m result [33m=[39m processMessage([32m"payment ho gaya"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 30 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"PAYMENT"[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 31 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"hi"[39m)[33m;[39m
+     [90m 32 |[39m   })[33m;[39m
+     [90m 33 |[39m[0m
+
+      at Object.toBe (tests/intent.test.js:30:27)
+
+  ● Intent Detection – Regex Based › English CANCEL_ORDER intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "CANCEL_ORDER"
+    Received: undefined
+
+    [0m [90m 34 |[39m   test([32m"English CANCEL_ORDER intent"[39m[33m,[39m () [33m=>[39m {
+     [90m 35 |[39m     [36mconst[39m result [33m=[39m processMessage([32m"cancel my order"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 36 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"CANCEL_ORDER"[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 37 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"en"[39m)[33m;[39m
+     [90m 38 |[39m   })[33m;[39m
+     [90m 39 |[39m[0m
+
+      at Object.toBe (tests/intent.test.js:36:27)
+
+  ● Intent Detection – Regex Based › UNKNOWN intent fallback
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "UNKNOWN"
+    Received: undefined
+
+    [0m [90m 40 |[39m   test([32m"UNKNOWN intent fallback"[39m[33m,[39m () [33m=>[39m {
+     [90m 41 |[39m     [36mconst[39m result [33m=[39m processMessage([32m"asdfghjkl"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 42 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"UNKNOWN"[39m)[33m;[39m
+     [90m    |[39m                           [31m[1m^[22m[39m
+     [90m 43 |[39m     expect(result[33m.[39mconfidence)[33m.[39mtoBe([32m"LOW"[39m)[33m;[39m
+     [90m 44 |[39m   })[33m;[39m
+     [90m 45 |[39m })[33m;[39m[0m
+
+      at Object.toBe (tests/intent.test.js:42:27)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "TypeError: r1.toLowerCase is not a function
+        at testFlows (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\tests\platform_integration.test.js:9:11)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m  7 |[39m
+     [90m  8 |[39m     [90m// Test 1: Greeting & Continuity[39m
+    [31m[1m>[22m[39m[90m  9 |[39m     console[33m.[39mlog([32m"Test 1: Greeting"[39m)[33m;[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 10 |[39m     [36mconst[39m r1 [33m=[39m [36mawait[39m handleWhatsAppMessage(user[33m,[39m [32m"Hello"[39m)[33m;[39m
+     [90m 11 |[39m     [36mif[39m ([33m![39mr1[33m.[39mtoLowerCase()[33m.[39mincludes([32m'urbanwear'[39m)) {
+     [90m 12 |[39m         console[33m.[39merror([32m"Failed Test 1"[39m)[33m;[39m[0m
+
+      at testFlows (tests/platform_integration.test.js:9:11)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Bot Response: [object Object]".
+
+    [0m [90m 13 |[39m     [90m// "mera order kaha hai" is in intents_config.json[39m
+     [90m 14 |[39m     [36mconst[39m r1 [33m=[39m [36mawait[39m handleWhatsAppMessage(user[33m,[39m [32m"mera order kaha hai"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 15 |[39m     console[33m.[39mlog([32m`Bot Response: ${r1}`[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 16 |[39m     [90m// Should trigger FAQ/Order status and notice the dues proactively[39m
+     [90m 17 |[39m
+     [90m 18 |[39m     [90m// Test 2: VIP Tagging Logic[39m[0m
+
+      at console.log (node_modules/@jest/console/build/BufferedConsole.js:156:10)
+      at log (tests/integration_merge.test.js:15:13)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "
+    Test 2: VIP Promotion Logic".
+
+    [0m [90m 17 |[39m
+     [90m 18 |[39m     [90m// Test 2: VIP Tagging Logic[39m
+    [31m[1m>[22m[39m[90m 19 |[39m     console[33m.[39mlog([32m"\nTest 2: VIP Promotion Logic"[39m)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 20 |[39m     [90m// User already has 2 orders in sample data.[39m
+     [90m 21 |[39m     [90m// Triggering a successful order should promote them[39m
+     [90m 22 |[39m     [90m// Simulation: We assume checking a product and saying yes is an order for this prototype[39m[0m
+
+      at console.log (node_modules/@jest/console/build/BufferedConsole.js:156:10)
+      at log (tests/integration_merge.test.js:19:13)
+
+
+ReferenceError: You are trying to `import` a file after the Jest environment has been torn down. From tests/integration_merge.test.js.
+
+    [0m [90m 25 |[39m     [90m// We can directly call the router logic or simulate through index[39m
+     [90m 26 |[39m     [90m// For now, let's verify the customerService directly as it's the core of the merge[39m
+    [31m[1m>[22m[39m[90m 27 |[39m     [36mconst[39m [33mCustomerService[39m [33m=[39m require([32m'../src/customerService'[39m)[33m;[39m
+     [90m    |[39m                             [31m[1m^[22m[39m
+     [90m 28 |[39m     [33mCustomerService[39m[33m.[39mupdateOrderStats(tenantId[33m,[39m user)[33m;[39m [90m// 3rd order[39m
+     [90m 29 |[39m     [36mconst[39m updated [33m=[39m [33mCustomerService[39m[33m.[39mgetOrCreateCustomer(tenantId[33m,[39m user)[33m;[39m
+     [90m 30 |[39m     [36mif[39m (updated[33m.[39mtags[33m.[39mincludes([32m'vip'[39m)) {[0m
+
+      at require (tests/integration_merge.test.js:27:29)
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "TypeError: CustomerService.updateOrderStats is not a function
+        at testMergedLogic (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\tests\integration_merge.test.js:26:19)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 24 |[39m
+     [90m 25 |[39m     [90m// We can directly call the router logic or simulate through index[39m
+    [31m[1m>[22m[39m[90m 26 |[39m     [90m// For now, let's verify the customerService directly as it's the core of the merge[39m
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 27 |[39m     [36mconst[39m [33mCustomerService[39m [33m=[39m require([32m'../src/customerService'[39m)[33m;[39m
+     [90m 28 |[39m     [33mCustomerService[39m[33m.[39mupdateOrderStats(tenantId[33m,[39m user)[33m;[39m [90m// 3rd order[39m
+     [90m 29 |[39m     [36mconst[39m updated [33m=[39m [33mCustomerService[39m[33m.[39mgetOrCreateCustomer(tenantId[33m,[39m user)[33m;[39m[0m
+
+      at testMergedLogic (tests/integration_merge.test.js:26:19)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Error handling message: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+        at Function.checkLocalRegex (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:123:31)
+        at Function.classify (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:17:30)
+        at routeRequest (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\router.js:17:30)
+        at handleWhatsAppMessage (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\index.js:83:26)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 121 |[39m
+     [90m 122 |[39m             [36mconst[39m result [33m=[39m [33mJSON[39m[33m.[39mparse(chatCompletion[33m.[39mchoices[[35m0[39m][33m.[39mmessage[33m.[39mcontent)[33m;[39m
+    [31m[1m>[22m[39m[90m 123 |[39m             [36mreturn[39m { [33m...[39mresult[33m,[39m source[33m:[39m [32m'ai'[39m }[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 124 |[39m         } [36mcatch[39m (error) {
+     [90m 125 |[39m             console[33m.[39merror([32m"Groq Classification Error:"[39m[33m,[39m error)[33m;[39m
+     [90m 126 |[39m             [90m// Fallback to simpler logic if API fails[39m[0m
+
+      at Function.checkLocalRegex (src/intentClassifier.js:123:31)
+      at Function.classify (src/intentClassifier.js:17:30)
+      at routeRequest (src/router.js:17:30)
+      at handleWhatsAppMessage (src/index.js:83:26)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at error (src/index.js:140:13)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Error handling message: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+        at Function.checkLocalRegex (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:123:31)
+        at Function.classify (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:17:30)
+        at routeRequest (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\router.js:17:30)
+        at handleWhatsAppMessage (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\index.js:83:26)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 121 |[39m
+     [90m 122 |[39m             [36mconst[39m result [33m=[39m [33mJSON[39m[33m.[39mparse(chatCompletion[33m.[39mchoices[[35m0[39m][33m.[39mmessage[33m.[39mcontent)[33m;[39m
+    [31m[1m>[22m[39m[90m 123 |[39m             [36mreturn[39m { [33m...[39mresult[33m,[39m source[33m:[39m [32m'ai'[39m }[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 124 |[39m         } [36mcatch[39m (error) {
+     [90m 125 |[39m             console[33m.[39merror([32m"Groq Classification Error:"[39m[33m,[39m error)[33m;[39m
+     [90m 126 |[39m             [90m// Fallback to simpler logic if API fails[39m[0m
+
+      at Function.checkLocalRegex (src/intentClassifier.js:123:31)
+      at Function.classify (src/intentClassifier.js:17:30)
+      at routeRequest (src/router.js:17:30)
+      at handleWhatsAppMessage (src/index.js:83:26)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at error (src/index.js:140:13)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Error handling message: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+        at Function.checkLocalRegex (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:123:31)
+        at Function.classify (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:17:30)
+        at routeRequest (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\router.js:17:30)
+        at handleWhatsAppMessage (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\index.js:83:26)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 121 |[39m
+     [90m 122 |[39m             [36mconst[39m result [33m=[39m [33mJSON[39m[33m.[39mparse(chatCompletion[33m.[39mchoices[[35m0[39m][33m.[39mmessage[33m.[39mcontent)[33m;[39m
+    [31m[1m>[22m[39m[90m 123 |[39m             [36mreturn[39m { [33m...[39mresult[33m,[39m source[33m:[39m [32m'ai'[39m }[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 124 |[39m         } [36mcatch[39m (error) {
+     [90m 125 |[39m             console[33m.[39merror([32m"Groq Classification Error:"[39m[33m,[39m error)[33m;[39m
+     [90m 126 |[39m             [90m// Fallback to simpler logic if API fails[39m[0m
+
+      at Function.checkLocalRegex (src/intentClassifier.js:123:31)
+      at Function.classify (src/intentClassifier.js:17:30)
+      at routeRequest (src/router.js:17:30)
+      at handleWhatsAppMessage (src/index.js:83:26)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at error (src/index.js:140:13)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Error handling message: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+        at Function.checkLocalRegex (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:123:31)
+        at Function.classify (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:17:30)
+        at routeRequest (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\router.js:17:30)
+        at handleWhatsAppMessage (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\index.js:83:26)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 121 |[39m
+     [90m 122 |[39m             [36mconst[39m result [33m=[39m [33mJSON[39m[33m.[39mparse(chatCompletion[33m.[39mchoices[[35m0[39m][33m.[39mmessage[33m.[39mcontent)[33m;[39m
+    [31m[1m>[22m[39m[90m 123 |[39m             [36mreturn[39m { [33m...[39mresult[33m,[39m source[33m:[39m [32m'ai'[39m }[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 124 |[39m         } [36mcatch[39m (error) {
+     [90m 125 |[39m             console[33m.[39merror([32m"Groq Classification Error:"[39m[33m,[39m error)[33m;[39m
+     [90m 126 |[39m             [90m// Fallback to simpler logic if API fails[39m[0m
+
+      at Function.checkLocalRegex (src/intentClassifier.js:123:31)
+      at Function.classify (src/intentClassifier.js:17:30)
+      at routeRequest (src/router.js:17:30)
+      at handleWhatsAppMessage (src/index.js:83:26)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at error (src/index.js:140:13)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Error handling message: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+        at Function.checkLocalRegex (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:123:31)
+        at Function.classify (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:17:30)
+        at routeRequest (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\router.js:17:30)
+        at handleWhatsAppMessage (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\index.js:83:26)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 121 |[39m
+     [90m 122 |[39m             [36mconst[39m result [33m=[39m [33mJSON[39m[33m.[39mparse(chatCompletion[33m.[39mchoices[[35m0[39m][33m.[39mmessage[33m.[39mcontent)[33m;[39m
+    [31m[1m>[22m[39m[90m 123 |[39m             [36mreturn[39m { [33m...[39mresult[33m,[39m source[33m:[39m [32m'ai'[39m }[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 124 |[39m         } [36mcatch[39m (error) {
+     [90m 125 |[39m             console[33m.[39merror([32m"Groq Classification Error:"[39m[33m,[39m error)[33m;[39m
+     [90m 126 |[39m             [90m// Fallback to simpler logic if API fails[39m[0m
+
+      at Function.checkLocalRegex (src/intentClassifier.js:123:31)
+      at Function.classify (src/intentClassifier.js:17:30)
+      at routeRequest (src/router.js:17:30)
+      at handleWhatsAppMessage (src/index.js:83:26)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at error (src/index.js:140:13)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Error handling message: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+        at Function.checkLocalRegex (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:123:31)
+        at Function.classify (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:17:30)
+        at routeRequest (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\router.js:17:30)
+        at handleWhatsAppMessage (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\index.js:83:26)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 121 |[39m
+     [90m 122 |[39m             [36mconst[39m result [33m=[39m [33mJSON[39m[33m.[39mparse(chatCompletion[33m.[39mchoices[[35m0[39m][33m.[39mmessage[33m.[39mcontent)[33m;[39m
+    [31m[1m>[22m[39m[90m 123 |[39m             [36mreturn[39m { [33m...[39mresult[33m,[39m source[33m:[39m [32m'ai'[39m }[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 124 |[39m         } [36mcatch[39m (error) {
+     [90m 125 |[39m             console[33m.[39merror([32m"Groq Classification Error:"[39m[33m,[39m error)[33m;[39m
+     [90m 126 |[39m             [90m// Fallback to simpler logic if API fails[39m[0m
+
+      at Function.checkLocalRegex (src/intentClassifier.js:123:31)
+      at Function.classify (src/intentClassifier.js:17:30)
+      at routeRequest (src/router.js:17:30)
+      at handleWhatsAppMessage (src/index.js:83:26)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at error (src/index.js:140:13)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Error handling message: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+        at Function.checkLocalRegex (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:123:31)
+        at Function.classify (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\intentClassifier.js:17:30)
+        at routeRequest (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\router.js:17:30)
+        at handleWhatsAppMessage (C:\Users\Advika Nagool\Desktop\whatsappintegration\intent-engine\src\index.js:83:26)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+
+    [0m [90m 121 |[39m
+     [90m 122 |[39m             [36mconst[39m result [33m=[39m [33mJSON[39m[33m.[39mparse(chatCompletion[33m.[39mchoices[[35m0[39m][33m.[39mmessage[33m.[39mcontent)[33m;[39m
+    [31m[1m>[22m[39m[90m 123 |[39m             [36mreturn[39m { [33m...[39mresult[33m,[39m source[33m:[39m [32m'ai'[39m }[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 124 |[39m         } [36mcatch[39m (error) {
+     [90m 125 |[39m             console[33m.[39merror([32m"Groq Classification Error:"[39m[33m,[39m error)[33m;[39m
+     [90m 126 |[39m             [90m// Fallback to simpler logic if API fails[39m[0m
+
+      at Function.checkLocalRegex (src/intentClassifier.js:123:31)
+      at Function.classify (src/intentClassifier.js:17:30)
+      at routeRequest (src/router.js:17:30)
+      at handleWhatsAppMessage (src/index.js:83:26)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at error (src/index.js:140:13)
+
+A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
+Test Suites: 4 failed, 4 total
+Tests:       10 failed, 3 passed, 13 total
+Snapshots:   0 total
+Time:        4.466 s
+Ran all test suites.

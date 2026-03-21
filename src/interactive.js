@@ -42,7 +42,7 @@ rl.on('line', async (line) => {
 
     try {
         const response = await handleWhatsAppMessage(DEMO_USER, input);
-        console.log(`Bot: ${response}`);
+        console.log(`Bot: ${response.text}`);
     } catch (error) {
         console.log(`Bot: Sorry, I hit an error. check your console/logs.`);
     }

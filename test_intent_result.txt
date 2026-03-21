@@ -1,0 +1,46 @@
+
+> intent-engine@1.0.0 test
+> jest --coverage tests/intent.test.js
+
+FAIL tests/intent.test.js
+  Intent Detection – Regex Based
+    × Hindi ORDER_STATUS intent (13 ms)
+    √ English ORDER_STATUS intent (3 ms)
+    √ Hindi ORDER_NEW intent (1 ms)
+    √ English ORDER_NEW intent (1 ms)
+    √ Hindi PAYMENT intent (1 ms)
+    √ English CANCEL_ORDER intent (1 ms)
+    √ UNKNOWN intent fallback (5 ms)
+
+  ● Intent Detection – Regex Based › Hindi ORDER_STATUS intent
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "hi"
+    Received: "en"
+
+    [0m [90m  5 |[39m     [36mconst[39m result [33m=[39m detectIntent([32m"mera order kaha hai"[39m)[33m;[39m
+     [90m  6 |[39m     expect(result[33m.[39mintent)[33m.[39mtoBe([32m"ORDER_STATUS"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m  7 |[39m     expect(result[33m.[39mlanguage)[33m.[39mtoBe([32m"hi"[39m)[33m;[39m
+     [90m    |[39m                             [31m[1m^[22m[39m
+     [90m  8 |[39m   })[33m;[39m
+     [90m  9 |[39m
+     [90m 10 |[39m   test([32m"English ORDER_STATUS intent"[39m[33m,[39m () [33m=>[39m {[0m
+
+      at Object.toBe (tests/intent.test.js:7:29)
+
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   85.07 |    62.85 |   76.92 |   90.16 |                   
+ detector          |   82.85 |    69.56 |   66.66 |    87.5 |                   
+  detectIntent.js  |   82.85 |    69.56 |   66.66 |    87.5 | 29-31,57          
+ utils             |    87.5 |       50 |   85.71 |    93.1 |                   
+  fuzzyMatch.js    |   86.95 |    55.55 |   83.33 |      95 | 40                
+  unknownlogger.js |   88.88 |    33.33 |     100 |   88.88 | 20                
+-------------------|---------|----------|---------|---------|-------------------
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 6 passed, 7 total
+Snapshots:   0 total
+Time:        0.813 s, estimated 1 s
+Ran all test suites matching /tests\\intent.test.js/i.

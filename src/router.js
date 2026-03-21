@@ -1,73 +1,69 @@
-const IntentClassifier = require('./intentClassifier');
-const TransactionEngine = require('./transactionEngine');
-const KnowledgeEngine = require('./knowledgeEngine');
-const FallbackEngine = require('./fallbackEngine');
-const ResponseGenerator = require('./responseGenerator');
-const CustomerService = require('./customerService');
+const IntentClassifier = require("./intentClassifier");
+const KnowledgeEngine = require("./knowledgeEngine");
+const TransactionEngine = require("./transactionEngine");
+const FallbackEngine = require("./fallbackEngine");
+const ResponseGenerator = require("./responseGenerator");
+const SessionManager = require("./sessionManager");
 
 /**
- * Orchestrates the flow based on intent and session state.
+ * Request Router
+ * Classifies intent then dispatches to the appropriate engine,
+ * generates a natural language response, and returns the result.
  */
-async function routeRequest(message, session, config) {
-    const tenantId = session.tenant_id;
-    const fromNumber = session.session_id;
+async function routeRequest(message, session, config, options = {}) {
+  // 1. Classify intent
+  const { intent_type } = await IntentClassifier.classify(message, session);
 
-    // 1. Classify Intent
-    const classification = await IntentClassifier.classify(message, session);
-    const intent = classification.intent_type;
+  // 2. Route to appropriate engine
+  let responseData;
+  switch (intent_type) {
+    case "TRANSACTIONAL":
+      responseData = await TransactionEngine.handle(message, session, config);
+      break;
+    case "PRODUCT_QUERY":
+    case "FAQ_QUERY":
+      responseData = await KnowledgeEngine.handle(message, session, config);
+      break;
+    case "SMALL_TALK":
+      responseData = { type: "SMALL_TALK" };
+      break;
+    default:
+      responseData = await FallbackEngine.handle(message, session, config);
+  }
 
-    // 2. Detect rejection — if user says no, clear product context so it's not pushed again
-    const lowerMsg = message.toLowerCase().trim();
-    const isRejection = /\b(no|nope|nahi|not interested|don't want|dont want|skip|nevermind|never mind)\b/.test(lowerMsg);
-    if (isRejection && session.last_product) {
-        session.last_product = null;
-    }
-
-    // 2. Proactive Customer Check (Teammate Logic)
-    // If user is just greeting or asking for help, check if they have dues
-    let proactiveData = null;
-    if (intent === 'SMALL_TALK' || intent === 'UNKNOWN') {
-        const paymentInfo = CustomerService.checkPaymentStatus(tenantId, fromNumber);
-        if (paymentInfo.has_due) {
-            proactiveData = { type: 'PAYMENT_REMINDER', data: paymentInfo };
-        }
-    }
-
-    let responseData = null;
-
-    // 3. Route to specific engine
-    switch (intent) {
-        case 'TRANSACTIONAL':
-            responseData = await TransactionEngine.handle(message, session, config);
-            // If a transaction was successful, update customer stats
-            if (responseData.type === 'TRANSACTION_SUCCESS' && responseData.action === 'ORDER_NEW') {
-                CustomerService.updateOrderStats(tenantId, fromNumber);
-            }
-            break;
-        case 'PRODUCT_QUERY':
-        case 'FAQ_QUERY':
-            responseData = await KnowledgeEngine.handle(message, session, config);
-            break;
-        case 'SMALL_TALK':
-            responseData = { type: 'SMALL_TALK', data: null };
-            break;
-        default:
-            responseData = await FallbackEngine.handle(message, session, config);
-    }
-
-    // 4. Merge proactive data if applicable
-    if (proactiveData && !responseData.type.includes('TRANSACTION')) {
-        responseData.proactive = proactiveData;
-    }
-
-    // 5. Generate natural response via AI
-    const naturalResponse = await ResponseGenerator.generate(message, responseData, session, config, responseData.products);
-
-    return {
-        intent,
-        response: naturalResponse,
-        session_update: session
+  // 3. Extract interactive payload (payment QR) if present - passed through to server
+  let interactive = null;
+  if (responseData && responseData.type === "INTERACTIVE_PAYMENT") {
+    interactive = {
+      type: "INTERACTIVE_PAYMENT",
+      payment_id: responseData.payment_id,
+      amount_cents: responseData.amount_cents,
     };
+  }
+
+  // 4. Persist any session state changes made by the engines
+  SessionManager.saveSession(session.session_id, session);
+
+  // 5. Generate natural language response via LLM
+  const response = await ResponseGenerator.generate(
+    message,
+    responseData,
+    session,
+    config,
+    options,
+  );
+
+  // 6. Mark greeting as shown if this was a greeting intent and greeting wasn't shown before
+  if (intent_type === "SMALL_TALK" && !session.greeting_shown) {
+    session.greeting_shown = true;
+    SessionManager.saveSession(session.session_id, session);
+  }
+
+  return {
+    intent: intent_type,
+    response,
+    interactive,
+  };
 }
 
 module.exports = routeRequest;

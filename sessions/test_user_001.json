@@ -2,58 +2,72 @@
   "session_id": "test_user_001",
   "tenant_id": "urbanwear",
   "last_product": "hoodie_001",
-  "pending_action": "CANCEL_ORDER",
-  "last_intent": "UNKNOWN",
+  "rejected_products": [],
+  "rejected_product_names": [],
+  "browsing_declined_count": 0,
+  "pending_action": "NEW_ORDER",
+  "last_intent": "TRANSACTIONAL",
+  "memory_summary": "* Classic Hoodie: Considering order, interested\n* No order pending, order preparation in progress\n* Size: unknown, color: unknown",
   "history": [
     {
       "user": "Hello",
-      "bot": "Hello from UrbanWear! How can I help you today?",
-      "timestamp": "2026-02-25T14:08:00.411Z"
+      "bot": "Hello, how can I help you with UrbanWear today?",
+      "timestamp": "2026-03-17T18:03:46.570Z"
     },
     {
       "user": "Tell me about the hoodie",
-      "bot": "Which product are you interested in?",
-      "timestamp": "2026-02-25T14:08:00.423Z"
+      "bot": "The Classic Hoodie is made of 100% Cotton and is available in sizes S, M, L, XL, and colors Black, Grey, Blue, priced at 1999. What size would you like?",
+      "timestamp": "2026-03-17T18:03:47.247Z"
     },
     {
       "user": "Is it cotton?",
-      "bot": "Which product are you interested in?",
-      "timestamp": "2026-02-25T14:08:00.425Z"
+      "bot": "Yes, the Classic Hoodie is made of 100% cotton. What size would you like?",
+      "timestamp": "2026-03-17T18:03:47.620Z"
     },
     {
       "user": "I want to cancel my order",
-      "bot": "Are you sure you want to cancel your order?",
-      "timestamp": "2026-02-25T14:08:00.428Z"
+      "bot": "You don't have a pending order to cancel. Would you like to proceed with the Classic Hoodie?",
+      "timestamp": "2026-03-17T18:03:48.114Z"
     },
     {
-      "user": "Yes, I am sure",
-      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
-      "timestamp": "2026-02-25T14:08:00.431Z"
+      "user": "Yes",
+      "bot": "To place the order for the Classic Hoodie, I still need to know your size and color preference. What size would you like?",
+      "timestamp": "2026-03-17T18:03:48.380Z"
     },
     {
       "user": "Hello",
-      "bot": "Hello from UrbanWear! How can I help you today?",
-      "timestamp": "2026-02-25T14:08:41.108Z"
+      "bot": "You were considering the Classic Hoodie, what size would you like to get? 🙂",
+      "timestamp": "2026-03-17T18:04:41.862Z"
     },
     {
       "user": "Tell me about the hoodie",
-      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
-      "timestamp": "2026-02-25T14:08:41.112Z"
+      "bot": "The Classic Hoodie is made of 100% Cotton and is available in various sizes and colors. To confirm your order, I need to know your preferred size and color.",
+      "timestamp": "2026-03-17T18:04:42.633Z"
     },
     {
       "user": "Is it cotton?",
-      "bot": "The Classic Hoodie is available for INR 1999. It's made of 100% Cotton. Would you like to know about available sizes?",
-      "timestamp": "2026-02-25T14:08:41.114Z"
+      "bot": "Yes, the Classic Hoodie is made of 100% Cotton. What size would you like? 🛍️",
+      "timestamp": "2026-03-17T18:04:43.334Z"
     },
     {
       "user": "I want to cancel my order",
-      "bot": "Are you sure you want to cancel your order?",
-      "timestamp": "2026-02-25T14:08:41.116Z"
+      "bot": "You haven't placed an order yet, so there's nothing to cancel. Would you like to continue with the Classic Hoodie?",
+      "timestamp": "2026-03-17T18:04:43.524Z"
     },
     {
-      "user": "Yes, I am sure",
-      "bot": "I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?",
-      "timestamp": "2026-02-25T14:08:41.118Z"
+      "user": "Yes",
+      "bot": "To place the order for the Classic Hoodie, can you please tell me your size and preferred color?",
+      "timestamp": "2026-03-17T18:04:43.738Z"
     }
-  ]
+  ],
+  "order_size": null,
+  "order_color": null,
+  "is_returning_customer": false,
+  "previous_orders": [],
+  "previous_orders_loaded": true,
+  "greeting_shown": true,
+  "last_product_name": "Classic Hoodie",
+  "customer_id": "cust_ce5df61a",
+  "customer_name": "New Customer",
+  "user_language": "en"
 }

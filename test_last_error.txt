@@ -1,0 +1,77 @@
+
+> intent-engine@1.0.0 test
+> jest --coverage tests/platform_integration.test.js
+
+  console.log
+    [dotenv@17.3.1] injecting env (6) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+  console.log
+    [dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+  console.log
+    Running Integration Tests...
+
+      at Object.log (tests/platform_integration.test.js:5:17)
+
+  console.log
+    Test 1: Greeting
+
+      at Object.log (tests/platform_integration.test.js:10:17)
+
+  console.log
+    Test 2: Product Context
+
+      at Object.log (tests/platform_integration.test.js:15:17)
+
+  console.log
+    Test 3: Transactional Guardrails
+
+      at Object.log (tests/platform_integration.test.js:21:17)
+
+FAIL tests/platform_integration.test.js
+  Integration Tests
+    × testFlows (3372 ms)
+
+  ● Integration Tests › testFlows
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: "haven't placed an order yet"
+    Received string:    "your order for the classic hoodie will be cancelled. is there anything else i can help you with?"
+
+    [0m [90m 21 |[39m         console[33m.[39mlog([32m"Test 3: Transactional Guardrails"[39m)[33m;[39m
+     [90m 22 |[39m         [36mconst[39m r3 [33m=[39m [36mawait[39m handleWhatsAppMessage(user[33m,[39m [32m"I want to cancel my order"[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 23 |[39m         expect(r3[33m.[39mtext[33m.[39mtoLowerCase())[33m.[39mtoContain([32m"haven't placed an order yet"[39m)[33m;[39m
+     [90m    |[39m                                       [31m[1m^[22m[39m
+     [90m 24 |[39m
+     [90m 25 |[39m         [90m// Test 4: Confirmation[39m
+     [90m 26 |[39m         console[33m.[39mlog([32m"Test 4: Confirmation execution"[39m)[33m;[39m[0m
+
+      at Object.toContain (tests/platform_integration.test.js:23:39)
+
+----------------------|---------|----------|---------|---------|---------------------------------------------
+File                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                           
+----------------------|---------|----------|---------|---------|---------------------------------------------
+All files             |   44.22 |    32.44 |      46 |   44.89 |                                             
+ customerService.js   |    3.38 |        0 |       0 |    3.57 | 10-170                                      
+ fallbackEngine.js    |   28.57 |        0 |       0 |   28.57 | 13-37                                       
+ index.js             |   47.29 |       55 |      50 |   47.29 | 28-39,46-56,62-71,79,98,132,140-141,150-170 
+ intentClassifier.js  |   68.33 |     50.7 |   66.66 |   69.49 | 26,39,48,59,125-127,161-178                 
+ knowledgeEngine.js   |   47.29 |       45 |   52.94 |   48.43 | 15-16,24-27,40-41,66-101,129-130,151-158    
+ memoryManager.js     |   72.72 |       50 |     100 |   72.72 | 50-54                                       
+ responseGenerator.js |   49.27 |    30.23 |   57.14 |   50.76 | 20-40,113-115,122-126,183-208               
+ router.js            |      68 |    53.84 |     100 |      68 | 21-22,28-31,37,57-58                        
+ sessionManager.js    |   66.66 |       50 |   66.66 |   66.66 | 19,42,48-50                                 
+ supabaseClient.js    |    87.5 |    54.54 |     100 |    87.5 | 8                                           
+ tenantResolver.js    |    87.5 |       50 |     100 |    87.5 | 19                                          
+ transactionEngine.js |    7.14 |        0 |       0 |    7.14 | 10-120                                      
+----------------------|---------|----------|---------|---------|---------------------------------------------
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 total
+Snapshots:   0 total
+Time:        4.389 s, estimated 5 s
+Ran all test suites matching /tests\\platform_integration.test.js/i.
