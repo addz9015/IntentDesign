@@ -1,4 +1,4 @@
-# 🚀 Antigravity AI - WhatsApp AI Platform
+# WhatsApp AI Platform
 
 A multi-tenant, AI-powered WhatsApp assistant platform featuring semantic intent classification, session memory, guardrails, and real-time WhatsApp integration.
 
