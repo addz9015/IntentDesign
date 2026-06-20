@@ -1,0 +1,10 @@
+{
+  "default_key": "urbanwear",
+  "tenants": [
+    {
+      "key": "urbanwear",
+      "db_tenant_id": 1,
+      "whatsapp_phone_number_id": "996010460267047"
+    }
+  ]
+}

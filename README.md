@@ -2,6 +2,8 @@
 
 A multi-tenant, AI-powered WhatsApp assistant platform featuring semantic intent classification, session memory, guardrails, and real-time WhatsApp integration.
 
+> **Architecture:** the system routes each message to one of three specialized AI agents — **Product**, **Reminder**, and **Return Policy** — behind a single orchestrator. WhatsApp transport is **Meta Cloud API only** (OpenWA removed). See **[ARCHITECTURE.md](ARCHITECTURE.md)** for agent boundaries, the DB schema, and how to add new modules. Run [scripts/migrations/001_agents_schema.sql](scripts/migrations/001_agents_schema.sql) in Supabase to enable the reminder/return-policy tables.
+
 ---
 
 ## 🛠 Features
@@ -25,31 +27,35 @@ Ensure you have [Node.js](https://nodejs.org/) installed.
 
 ### 2. Environment Configuration
 
-Create a `.env` file in the root directory and fill in the following:
+Copy the template and fill in your own values. **Never commit your real `.env`** — it is gitignored; only `.env.example` (no secrets) is tracked.
+
+```powershell
+cp .env.example .env
+```
+
+Minimum required keys:
 
 ```env
 # Groq AI Key (Get it from console.groq.com)
 GROQ_API_KEY=your_groq_key_here
 
-# WhatsApp Webhook Verification Token (Your choice)
+# WhatsApp Cloud API (Meta) — the only supported transport
 VERIFY_TOKEN=your_custom_verify_token
-
-# WhatsApp Cloud API Credentials
 WHATSAPP_TOKEN=your_meta_access_token
 PHONE_NUMBER_ID=your_meta_phone_id
+# App Secret → verifies incoming webhooks (X-Hub-Signature-256)
+META_APP_SECRET=your_meta_app_secret
 
-# Optional: AI4Bharat custom translation endpoint
-AI4BHARAT_API_URL=https://your-ai4bharat-endpoint
-AI4BHARAT_API_KEY=your_ai4bharat_api_key
+# Supabase (products, customers, payments, reminders, return policies)
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
 
-# Optional: Hugging Face fallback for AI4Bharat models
-HUGGINGFACE_API_KEY=your_huggingface_token
-AI4BHARAT_HF_INDIC_TO_EN_MODEL=ai4bharat/indictrans2-indic-en-1B
-AI4BHARAT_HF_EN_TO_INDIC_MODEL=ai4bharat/indictrans2-en-indic-1B
-
-# Optional: Emoji injection chance from 0.0 to 1.0 (default: 0.25)
-RESPONSE_EMOJI_PROBABILITY=0.25
+# Tenant resolution (defaults in tenants/registry.json)
+DEFAULT_TENANT_ID=1
+DEFAULT_TENANT_KEY=urbanwear
 ```
+
+Optional keys (reminders cadence, emoji probability, AI4Bharat/Hugging Face translation) are documented in **[.env.example](.env.example)**.
 
 ### 3. Installation
 
@@ -81,18 +87,34 @@ _Note: Use a tool like **ngrok** to expose your local port 5000 to the internet.
 
 ## 🏗 Project Structure
 
+Each message is classified, then routed to one of three specialized agents behind a single orchestrator. See **[ARCHITECTURE.md](ARCHITECTURE.md)** for the full request flow and DB schema.
+
 ```text
 tenants/
-  └── urbanwear/         # Business-specific data
-      ├── config.json    # Settings (tone, currency, etc)
-      ├── products.json  # Catalog for RAG
-      └── customers.json # Database (Auto-updated)
+  ├── registry.json          # Tenant routing (phone-number-id → tenant)
+  └── urbanwear/             # Per-business config & file fallbacks
+      ├── config.json        # Settings (tone, currency, etc.)
+      ├── products.json      # Catalog
+      ├── customers.json     # Customer records
+      ├── faqs.json
+      └── policies.json
+scripts/
+  └── migrations/001_agents_schema.sql   # Supabase tables for reminders/returns
 src/
-  ├── server.js          # Express Webhook Server
-  ├── router.js          # Core Orchestrator
-  ├── intentClassifier.js# Hybrid AI Brain
-  ├── customerService.js # CRM & VIP Logic
-  └── whatsappService.js # API Connector
+  ├── server.js              # Express webhook server (Meta Cloud API)
+  ├── index.js               # Entry: tenant resolve, session, language adapt
+  ├── core/
+  │   ├── agentRouter.js     # Orchestrator (routing + multi-domain aggregation)
+  │   └── baseAgent.js       # Base class all agents extend
+  ├── agents/                # ProductAgent, ReminderAgent, ReturnPolicyAgent
+  ├── intentClassifier.js    # Hybrid brain (rules → regex → Groq)
+  ├── knowledgeEngine.js     # Product Q&A / RAG
+  ├── transactionEngine.js   # Orders, payments, cancellations (guardrailed)
+  ├── reminderScheduler.js   # Background poll for due reminders & payment dues
+  ├── responseGenerator.js   # Structured result → natural language reply
+  ├── languageService.js     # Hinglish / Indic language adaptation
+  ├── whatsappAdapter.js     # → whatsappService.js (Meta Cloud API connector)
+  └── supabaseClient.js      # Supabase connection
 ```
 
 ---

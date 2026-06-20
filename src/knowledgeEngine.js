@@ -13,15 +13,16 @@ class KnowledgeEngine {
         if (session.last_intent === 'FAQ_QUERY' || message.toLowerCase().includes('delivery') || message.toLowerCase().includes('return')) {
             // Clear last product context when switching to non-product topics
             session.last_product = null;
-            return this.handleFAQ(message, tenantId);
+            return this.handleFAQ(message, session.tenant_key || 'urbanwear');
         }
 
         return await this.handleProductQuery(message, session, tenantId);
     }
 
-    static handleFAQ(message, tenantId) {
-        // FAQs can stay in JSON for now, or move to Supabase later
-        const faqs = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tenants', tenantId, 'faqs.json'), 'utf8'));
+    static handleFAQ(message, tenantKey) {
+        // FAQs can stay in JSON for now, or move to Supabase later.
+        // NOTE: read by string tenant_key (folder name), NOT the integer db id.
+        const faqs = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tenants', tenantKey, 'faqs.json'), 'utf8'));
         // Simulating AI matching FAQ
         const faq = faqs.find(f => message.toLowerCase().includes(f.question.toLowerCase().split(' ')[0]));
         return {
@@ -49,6 +50,9 @@ class KnowledgeEngine {
         const lowerMsg = message.toLowerCase();
         if (!session.rejected_products) session.rejected_products = [];
         if (!session.rejected_product_names) session.rejected_product_names = [];
+
+        const wantsAlternatives = /(kuch\s+aur|aur\s+dikhao|some\s+other|other\s+products|another\s+product|something\s+else|show\s+more)/i.test(lowerMsg);
+        const isNegotiating = /(discount|best\s+price|lower|kam\s+kar|sasta|cheap|thoda\s+kam|kam\s+price|final\s+price|last\s+price|offer|deal|can\s+you\s+do|lowest|more\s+discount|thora\s+kam)/i.test(lowerMsg);
 
         // Build a set of aliases per product for fuzzy matching
         function getAliases(name) {
@@ -111,6 +115,22 @@ class KnowledgeEngine {
         // Only consider products the user hasn't rejected
         const activeProducts = products.filter(p => !session.rejected_products.includes(p.product_id));
 
+        // 0b. Browse alternatives flow (fixes repeated suggestion of current product)
+        if (wantsAlternatives) {
+            const alternatives = activeProducts.filter(p => p.product_id !== session.last_product);
+            const list = alternatives.length > 0 ? alternatives : activeProducts;
+
+            session.last_product = null;
+            session.last_product_name = null;
+
+            return {
+                type: 'ALTERNATIVE_PRODUCTS',
+                data: null,
+                message: 'User asked for other products. Show 2-3 different options and ask which one they want details for.',
+                products: list.map(p => ({ name: p.name, id: p.product_id }))
+            };
+        }
+
         // 1. Try to find product by keyword match
         let product = activeProducts.find(p => {
             const aliases = getAliases(p.name);
@@ -123,11 +143,64 @@ class KnowledgeEngine {
             product = activeProducts.find(p => p.product_id === session.last_product);
         }
 
+        // 2b. Negotiation flow for current product context
+        if (isNegotiating && product) {
+            const maxDiscountPercent = session.negotiation_attempts >= 2 ? 0.05 : 0.10;
+            const minPriceCents = Math.round(product.price_cents * (1 - maxDiscountPercent));
+            const parsedNumbers = (lowerMsg.match(/\d+/g) || []).map(Number).filter(Boolean);
+            let requestedPriceCents = null;
+
+            if (parsedNumbers.length > 0) {
+                // Treat 3+ digit values as rupees and convert to cents
+                const requestedRupees = Math.max(...parsedNumbers);
+                if (requestedRupees >= 100) {
+                    requestedPriceCents = requestedRupees * 100;
+                }
+            }
+
+            const negotiatedPriceCents = session.negotiated_price_cents && session.negotiation_attempts >= 2
+                ? session.negotiated_price_cents
+                : requestedPriceCents
+                    ? Math.max(requestedPriceCents, minPriceCents)
+                    : minPriceCents;
+
+            session.negotiated_product_id = product.product_id;
+            session.negotiated_price_cents = negotiatedPriceCents;
+            session.negotiation_attempts = (session.negotiation_attempts || 0) + 1;
+            session.last_product = product.product_id;
+            session.last_product_name = product.name;
+
+            const formattedProduct = {
+                id: product.product_id,
+                name: product.name,
+                price: product.price_cents / 100,
+                material: product.material,
+                sizes: product.sizes,
+                colors: product.colors
+            };
+
+            return {
+                type: 'NEGOTIATION_OFFER',
+                data: {
+                    ...formattedProduct,
+                    original_price: product.price_cents / 100,
+                    offered_price: negotiatedPriceCents / 100
+                },
+                message: session.negotiation_attempts >= 2
+                    ? 'User is negotiating price again. This is the final offer. Share the best offer clearly and ask if they want to place the order at that price.'
+                    : 'User is negotiating price. Acknowledge, share the best offer, and ask if they want to place the order at that price.',
+                products: activeProducts.map(p => ({ name: p.name, id: p.product_id }))
+            };
+        }
+
         if (product) {
             // Reset collected order info when switching to a different product
             if (product.product_id !== session.last_product) {
                 session.order_size = null;
                 session.order_color = null;
+                session.negotiated_product_id = null;
+                session.negotiated_price_cents = null;
+                session.negotiation_attempts = 0;
             }
             session.last_product = product.product_id;
             session.last_product_name = product.name;
@@ -149,6 +222,10 @@ class KnowledgeEngine {
             };
         } else {
             session.last_product = null;
+            session.last_product_name = null;
+            session.negotiated_product_id = null;
+            session.negotiated_price_cents = null;
+            session.negotiation_attempts = 0;
         }
 
         return {

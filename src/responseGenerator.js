@@ -1,9 +1,4 @@
-const Groq = require("groq-sdk");
 const LanguageService = require("./languageService");
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 const LANGUAGE_PROMPT_LABELS = {
   en: "English",
@@ -28,6 +23,12 @@ const EMOJI_BY_TYPE = {
   CONFIRMATION_REQUIRED: ["✅", "👍", "🙂"],
   SMALL_TALK: ["👋", "😊", "🙂"],
   INTERACTIVE_PAYMENT: ["💳", "✅", "🎉"],
+  ALTERNATIVE_PRODUCTS: ["🛍️", "✨", "👍"],
+  NEGOTIATION_OFFER: ["✅", "💬", "💸"],
+  REMINDER_SET: ["🕒", "⏰"],
+  REMINDER_INFO: ["⏰", "🔔", "🙂"],
+  REMINDER_NEGOTIATION: ["🙏", "✅", "💬"],
+  RETURN_POLICY: ["↩️", "📦", "ℹ️"],
   FALLBACK: ["🙂", "🙏", "✨"],
   DEFAULT: ["🙂", "✨", "👍"],
 };
@@ -62,6 +63,17 @@ function formatContext(responseData) {
       return message
         ? `Small talk context: ${message}`
         : "The user is making small talk.";
+    case "ALTERNATIVE_PRODUCTS":
+      if (products && products.length > 0) {
+        const productNames = products.map((p) => p.name).slice(0, 5).join(", ");
+        return `User asked for other products. Suggest 2-3 options from: ${productNames}. Do NOT keep pushing the previously discussed product.`;
+      }
+      return "User asked for other products. Suggest a few alternatives and ask preference.";
+    case "NEGOTIATION_OFFER":
+      if (data) {
+        return `User is negotiating for ${data.name}. Original price: ${data.original_price}. Best offer price: ${data.offered_price}. Share this offer briefly and ask if they want to place order.`;
+      }
+      return "User is negotiating price. Share best offer and ask for confirmation.";
     case "BROWSING_DECLINED":
       return message;
     default:
@@ -139,7 +151,7 @@ function getEmojiProbability(config = {}) {
   const parsed = Number(rawProbability);
 
   if (!Number.isFinite(parsed)) {
-    return 0.25;
+    return 0;
   }
 
   return Math.min(1, Math.max(0, parsed));
@@ -180,103 +192,107 @@ class ResponseGenerator {
     const memorySummary = session.memory_summary || "";
 
     try {
-      const formattedContext = formatContext(responseData);
-      const isOrderRelated = [
-        "CONFIRMATION_REQUIRED",
-        "TRANSACTION_SUCCESS",
-        "INTERACTIVE_PAYMENT",
-      ].includes(responseData?.type);
-      const isSmallTalk = responseData?.type === "SMALL_TALK";
       const promptLanguage = resolvePromptLanguage(
         userMessage,
         session,
         options,
       );
       const languageRule = buildLanguageRule(promptLanguage);
-      const rejectedNames = session.rejected_product_names || [];
+      const reviewLink = config?.review_link ? ` Please share your review here: ${config.review_link}` : "";
+      const productName = responseData?.data?.name || session.last_product_name || "the product";
+      const productPrice = responseData?.data?.price;
+      const originalPrice = responseData?.data?.original_price;
+      const offerPrice = responseData?.data?.offered_price;
+      const productSizes = Array.isArray(responseData?.data?.sizes) ? responseData.data.sizes.filter(Boolean).join(", ") : "";
+      const productColors = Array.isArray(responseData?.data?.colors) ? responseData.data.colors.filter(Boolean).join(", ") : "";
+      const formattedContext = formatContext(responseData);
 
-      const hasOrderSize = !!session.order_size;
-      const hasOrderColor = !!session.order_color;
-      const previousOrders = session.previous_orders || [];
-      const isReturning =
-        session.is_returning_customer && previousOrders.length > 0;
+      let reply = "";
 
-      const previousOrdersText = previousOrders
-        .map((o) => {
-          const name = o.product_name || "an item";
-          const amount = o.amount_cents ? `₹${o.amount_cents / 100}` : "";
-          return `- ${name} ${amount}`.trim();
-        })
-        .join("\n");
-
-      // Build greeting instruction based on whether greeting was already shown
-      let greetingInstruction = "";
-      if (isSmallTalk) {
-        if (!session.greeting_shown) {
-          greetingInstruction =
-            "- This is the start of the conversation. Greet the user briefly and IMMEDIATELY ask how you can help them with their shopping. DO NOT ask how their day is going. AVOID all non-shopping small talk.";
-        } else {
-          greetingInstruction =
-            "- Acknowledge their message briefly and IMMEDIATELY redirect the conversation to shopping. DO NOT ask how their day is going. AVOID all non-shopping small talk.";
+      switch (responseData?.type) {
+        case "PRODUCT_QUERY":
+          if (responseData?.data) {
+            const details = [
+              `${productName} is available for ${config.currency || "INR"} ${productPrice}`,
+              responseData.data.material ? `Material: ${responseData.data.material}` : null,
+              productSizes ? `Sizes: ${productSizes}` : null,
+              productColors ? `Colors: ${productColors}` : null,
+            ].filter(Boolean).join('. ');
+            reply = `${details}. Are you also interested in buying?`;
+          } else if (responseData?.message) {
+            reply = `${responseData.message} Are you also interested in buying?`;
+          } else {
+            reply = "Which product are you interested in? Are you also interested in buying?";
+          }
+          break;
+        case "FAQ_QUERY":
+          reply = responseData?.data?.answer || responseData?.message || "I can help with product details, orders, payments, and reminders.";
+          break;
+        case "TRANSACTION_SUCCESS":
+          reply = `${responseData?.message || "Done."}${reviewLink}`;
+          break;
+        case "TRANSACTION_CANCELLED":
+          reply = responseData?.message || "Okay, I have cancelled that request.";
+          break;
+        case "CONFIRMATION_REQUIRED":
+          reply = responseData?.message || "Should I go ahead and place the order?";
+          break;
+        case "INTERACTIVE_PAYMENT":
+          reply = `${responseData?.message || "The payment QR code has been sent."}${reviewLink}`;
+          break;
+        case "NEGOTIATION_OFFER": {
+          const finalOffer = offerPrice || productPrice;
+          const lead = session.negotiation_attempts >= 2
+            ? "This is our best price."
+            : "I can offer";
+          reply = `${lead} ${productName} for ${config.currency || "INR"} ${finalOffer}. Are you also interested in buying at this price?`;
+          break;
         }
+        case "ALTERNATIVE_PRODUCTS":
+          reply = responseData?.message || "I can suggest other products if you want.";
+          break;
+        case "BROWSING_DECLINED":
+          reply = responseData?.message || "I can help only with products, orders, payments, and reminders.";
+          break;
+        case "SMALL_TALK":
+          reply = "I can help with products, prices, orders, payments, and reminders. Which product are you looking for?";
+          break;
+        case "REMINDER_SET":
+          reply = `${responseData?.message || "Okay, I have set the reminder."} I can also help you with products, prices, orders, payments, and reviews.`;
+          break;
+        case "REMINDER_INFO":
+          reply = responseData?.message || "I can set reminders and nudge you about pending payments.";
+          break;
+        case "REMINDER_NEGOTIATION":
+          // Message is already a complete, tone-appropriate WhatsApp reply.
+          reply = responseData?.message || "Thanks for your message. Let me know how you'd like to proceed.";
+          break;
+        case "RETURN_POLICY":
+          reply = responseData?.message || "I can help with returns and refunds. Could you tell me which product?";
+          break;
+        case "FALLBACK":
+        default:
+          reply = responseData?.message || "I can help with products, prices, orders, payments, and reminders. Which product are you looking for?";
+          break;
       }
 
-      const systemPrompt = `You are a helpful WhatsApp shopping assistant for ${businessName}.
-Tone: ${tone}. Keep replies SHORT (1-3 sentences max). Do not add emojis on your own.
+      if (responseData?.type === "PRODUCT_QUERY" && responseData?.data && session.last_product_name) {
+        const followUp = session.pending_action ? "" : "";
+        reply = reply + followUp;
+      }
 
-${languageRule}
-${rejectedNames.length > 0 ? `\n!! REJECTED PRODUCTS - ABSOLUTE RULE !!\nThe user said NO to these. NEVER name, mention, or suggest them under any circumstances: ${rejectedNames.join(", ")}\n` : ""}
-${greetingInstruction}
-CUSTOMER INFO:
-Name: ${session.customer_name || "Customer"}${isOrderRelated ? `\nCustomer ID: ${session.customer_id}` : ""}
-${isReturning ? `\nRETURNING CUSTOMER - Previous orders:\n${previousOrdersText}\n- Greet them warmly and mention their last purchase.\n- If you reference their previous product, ALWAYS ask: "Would you like to order the same again, or shop for something new?"\n` : ""}
-ALREADY COLLECTED FOR CURRENT PRODUCT (DO NOT ASK AGAIN):
-${hasOrderSize ? `Size already selected: ${session.order_size}` : "Size: not yet collected"}
-${hasOrderColor ? `Color already selected: ${session.order_color}` : "Color: not yet collected"}
-!! CRITICAL: If size is marked collected, NEVER ask for size again. If color is marked collected, NEVER ask for color again. Ask only for what is still not collected, then move to order confirmation. !!
+      if (responseData?.type === "REMINDER_SET" && responseData?.follow_up) {
+        reply = `${reply} ${responseData.follow_up}`.trim();
+      }
 
-CONVERSATION MEMORY (what has been discussed so far):
-${memorySummary || "(Start of conversation)"}
+      if (!reply) {
+        reply = formattedContext || "I can help with products, prices, orders, payments, and reminders.";
+      }
 
-CURRENT QUERY CONTEXT:
-${formattedContext}${session.last_product_name ? `\nLast product in context: ${session.last_product_name}` : ""}
-
-PAYMENT RULES:
-- Accepted payment methods: UPI and Credit/Debit Card.
-- If user asks how to pay online, say: "You can pay via UPI or Credit/Debit card"
-- When context type is INTERACTIVE_PAYMENT: confirm the order and say the payment QR code has been sent. Do NOT ask about payment methods.
-- If user says "I have paid" or "paid": reply with a warm confirmation and end - "Payment confirmed! Your order is placed. Thank you for shopping with us!"
-
-RULES:
-- NEVER mention the Customer ID unless this is an active order/transaction.
-- NEVER use placeholders like [product_name] or [size].
-- If the user says "yes", "ok", "sure" - they are confirming or continuing the current product topic (${session.last_product_name || "last discussed product"}). Ask only for uncollected details, then confirm the order.
-- If the user says "it", "that", "the one", resolve it using the last product in context above.
-- Do NOT ask for anything already collected.
-- If the user says "no", "not interested", "nope", or "nahi", stop suggesting that product. Acknowledge and offer other help.
-${isSmallTalk ? "- During small talk: AVOID non-shopping small talk. Always steer the conversation back to shopping and our products." : "- Do NOT be pushy or repeat the same recommendation more than once."}`;
-
-      const chatCompletion = await groq.chat.completions.create({
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage },
-        ],
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 200,
-      });
-
-      return maybeAddRandomEmoji(
-        chatCompletion.choices[0].message.content,
-        responseData,
-        config,
-      );
+      return maybeAddRandomEmoji(reply, responseData, config);
     } catch (error) {
       console.error("Groq Generation Error:", error);
-      return maybeAddRandomEmoji(
-        this.mockGroqGeneration(responseData, config),
-        responseData,
-        config,
-      );
+      return maybeAddRandomEmoji(this.mockGroqGeneration(responseData, config), responseData, config);
     }
   }
 
@@ -299,10 +315,13 @@ ${isSmallTalk ? "- During small talk: AVOID non-shopping small talk. Always stee
       return `Done! ${message}`;
     }
     if (type === "SMALL_TALK") {
-      return `Hello from ${businessName}! How can I help you today?`;
+      return `I can help with products, prices, orders, payments, and reminders. Which product are you looking for?`;
+    }
+    if (type === "REMINDER_SET") {
+      return message || "Okay, I have set the reminder.";
     }
 
-    return message || "I'm here to help! What's on your mind?";
+    return message || "I can help with products, prices, orders, payments, and reminders. Which product are you looking for?";
   }
 }
 

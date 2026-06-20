@@ -3,5 +3,6 @@
   "tone": "friendly",
   "currency": "INR",
   "supported_languages": ["en", "hi", "hinglish"],
-  "confirmation_required_for": ["CANCEL_ORDER", "REFUND"]
+  "confirmation_required_for": ["CANCEL_ORDER", "REFUND"],
+  "review_link": ""
 }

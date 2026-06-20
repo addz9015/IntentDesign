@@ -14,7 +14,7 @@ class FallbackEngine {
 
         return {
             type: 'FALLBACK',
-            message: `I'm sorry, I'm still learning. I can help you with:\n1️⃣ Product details\n2️⃣ Track order\n3️⃣ Cancel order\n4️⃣ Refund queries\nHow can I assist?`
+            message: `I can help with products, prices, orders, payments, and reminders. Which product are you looking for?`
         };
     }
 

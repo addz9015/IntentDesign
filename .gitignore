@@ -3,3 +3,12 @@ coverage/
 .DS_Store
 *.log
 .env
+.env.local
+
+# Runtime state (per-instance, should not be committed)
+sessions/
+logs/
+
+# Local scratch / test output
+test_*.txt
+schema_output.json

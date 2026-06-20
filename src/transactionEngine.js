@@ -42,14 +42,24 @@ class TransactionEngine {
                         .single();
 
                     if (product) {
+                        const hasNegotiatedPrice =
+                            session.negotiated_product_id === session.last_product &&
+                            Number.isFinite(session.negotiated_price_cents);
+                        const finalAmountCents = hasNegotiatedPrice
+                            ? session.negotiated_price_cents
+                            : product.price_cents;
+
                         // Create pending payment in database
                         const paymentRecord = await CustomerService.createPayment(
-                            tenantId, customerId, product.price_cents,
+                            tenantId, customerId, finalAmountCents,
                             session.last_product, session.last_product_name
                         );
                         // Clear collected order details now that order is placed
                         session.order_size = null;
                         session.order_color = null;
+                        session.negotiated_product_id = null;
+                        session.negotiated_price_cents = null;
+                        session.negotiation_attempts = 0;
                         // Promote customer to frequent (fire-and-forget)
                         CustomerService.updateOrderStats(tenantId, session.session_id).catch(() => {});
 
@@ -57,7 +67,7 @@ class TransactionEngine {
                             type: 'INTERACTIVE_PAYMENT',
                             action: action,
                             payment_id: paymentRecord.payment_id,
-                            amount_cents: product.price_cents,
+                            amount_cents: finalAmountCents,
                             message: `Great! Your order for ${session.last_product_name || 'the item'} is confirmed. A payment QR code will be sent to you now. You can pay via UPI or Credit/Debit card.`
                         };
                     }
@@ -77,24 +87,10 @@ class TransactionEngine {
             }
         }
 
-        // 2. Detect Ordering Intent
-        if (lower.includes('buy') || lower.includes('order') || lower.includes('purchase')) {
-            if (!session.last_product) {
-                return {
-                    type: 'TRANSACTION_INFO',
-                    message: "What product would you like to order?"
-                };
-            }
-
-            session.pending_action = 'NEW_ORDER';
-            return {
-                type: 'CONFIRMATION_REQUIRED',
-                action: 'NEW_ORDER',
-                message: "Shall I go ahead and place the order for this item?"
-            };
-        }
-
-        // 3. Detect Cancellation/Refunds
+        // 2. Detect Cancellation / Refunds FIRST.
+        //    "cancel my order" contains the word "order", so this must run before
+        //    the generic ordering branch below — otherwise it would be treated as
+        //    a new order instead of a cancellation.
         if (lower.includes('cancel')) {
             if (config.confirmation_required_for.includes('CANCEL_ORDER')) {
                 session.pending_action = 'CANCEL_ORDER';
@@ -115,6 +111,23 @@ class TransactionEngine {
                     message: "Are you sure you want to request a refund? This will take 5-7 days."
                 };
             }
+        }
+
+        // 3. Detect Ordering Intent
+        if (lower.includes('buy') || lower.includes('order') || lower.includes('purchase')) {
+            if (!session.last_product) {
+                return {
+                    type: 'TRANSACTION_INFO',
+                    message: "What product would you like to order?"
+                };
+            }
+
+            session.pending_action = 'NEW_ORDER';
+            return {
+                type: 'CONFIRMATION_REQUIRED',
+                action: 'NEW_ORDER',
+                message: "Shall I go ahead and place the order for this item?"
+            };
         }
 
         return {

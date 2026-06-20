@@ -1,7 +1,11 @@
 require("dotenv").config();
-const { resolveTenant, getTenantConfig } = require("./tenantResolver");
+const {
+  resolveTenant,
+  resolveTenantKey,
+  getTenantConfig,
+} = require("./tenantResolver");
 const SessionManager = require("./sessionManager");
-const routeRequest = require("./router");
+const routeRequest = require("./core/agentRouter");
 const MemoryManager = require("./memoryManager");
 const CustomerService = require("./customerService");
 const LanguageService = require("./languageService");
@@ -12,11 +16,16 @@ const LanguageService = require("./languageService");
 async function handleWhatsAppMessage(fromNumber, messageText) {
   try {
     // 1. Resolve Tenant
+    //    tenantId is the INTEGER db id used for all Supabase queries.
+    //    tenantKey is the STRING folder name used for file-based config.
     const tenantId = resolveTenant(fromNumber);
+    const tenantKey = resolveTenantKey(fromNumber);
     const config = getTenantConfig(tenantId);
 
     // 2. Load/Initialize Session
     const session = SessionManager.getSession(fromNumber, tenantId);
+    session.tenant_id = tenantId; // ensure stored sessions use the integer db id
+    session.tenant_key = tenantKey;
 
     // 2x. Reset browsing state if this is a new conversation (inactive > 30 mins)
     const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
@@ -35,9 +44,13 @@ async function handleWhatsAppMessage(fromNumber, messageText) {
       session.pending_action = null;
       session.order_size = null;
       session.order_color = null;
+      session.negotiated_product_id = null;
+      session.negotiated_price_cents = null;
+      session.negotiation_attempts = 0;
       session.previous_orders_loaded = false;
       session.greeting_shown = false; // Reset greeting flag for new conversation
       session.user_language = "en";
+      session.reply_language_preference = "en";
       console.log(
         `🔄 New conversation detected for ${fromNumber} — browsing state reset`,
       );
@@ -102,15 +115,43 @@ async function handleWhatsAppMessage(fromNumber, messageText) {
       }
     }
 
-    // 3. Language adaptation: translate regional input through AI4Bharat when configured
+    // 3. Language adaptation with sticky reply language per session.
+    //    Reply language changes only on explicit user request.
+    const explicitLanguageSwitch = LanguageService.detectExplicitLanguageSwitch(
+      messageText,
+    );
+
+    if (explicitLanguageSwitch) {
+      session.reply_language_preference = explicitLanguageSwitch.code;
+      session.user_language = explicitLanguageSwitch.code;
+    }
+
     const detectedLanguage = LanguageService.detectUserLanguage(
       messageText,
       session,
     );
-    session.user_language = detectedLanguage.code;
+
+    const currentReplyLanguage =
+      session.reply_language_preference || session.user_language || "en";
+
+    let replyLanguage = currentReplyLanguage;
+
+    if (
+      !explicitLanguageSwitch &&
+      LanguageService.shouldAutoSwitchReplyLanguage(
+        messageText,
+        detectedLanguage,
+        currentReplyLanguage,
+      )
+    ) {
+      replyLanguage = detectedLanguage.code;
+    }
+
+    session.user_language = replyLanguage;
+    session.reply_language_preference = replyLanguage;
 
     let routingMessage = messageText;
-    let replyLanguage = detectedLanguage.code;
+    let llmReplyLanguage = replyLanguage;
     let translateReplyBack = false;
 
     if (LanguageService.shouldUseAI4Bharat(detectedLanguage.code)) {
@@ -121,14 +162,16 @@ async function handleWhatsAppMessage(fromNumber, messageText) {
 
       if (translatedInput) {
         routingMessage = translatedInput;
-        replyLanguage = "en";
-        translateReplyBack = true;
+        if (replyLanguage !== "en") {
+          llmReplyLanguage = "en";
+          translateReplyBack = true;
+        }
       }
     }
 
     // 4. Route through AI Engines
     const result = await routeRequest(routingMessage, session, config, {
-      replyLanguage,
+      replyLanguage: llmReplyLanguage,
     });
 
     // 5. Translate response back to the user's language when needed
@@ -136,7 +179,7 @@ async function handleWhatsAppMessage(fromNumber, messageText) {
     if (translateReplyBack) {
       const translatedReply = await LanguageService.translateFromEnglish(
         result.response,
-        detectedLanguage.code,
+        replyLanguage,
       );
       if (translatedReply) {
         finalResponseText = translatedReply;

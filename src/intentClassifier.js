@@ -2,18 +2,82 @@ const Groq = require('groq-sdk');
 const fs = require('fs');
 const path = require('path');
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
-});
+const groq = process.env.GROQ_API_KEY
+    ? new Groq({
+        apiKey: process.env.GROQ_API_KEY
+    })
+    : null;
 
 // Load teammate's regex patterns
 const INTENT_PATTERNS = JSON.parse(fs.readFileSync(path.join(__dirname, 'config', 'intents_config.json'), 'utf8'));
+
+const SMALL_TALK_PATTERNS = [
+    /\b(weather|rain|sunny|hot|cold|temperature)\b/i,
+    /\b(how are you|how's it going|whats up|what's up|timepass|bored|boring)\b/i,
+    /\b(just chatting|chat|talk to me|random)\b/i
+];
+
+const REMINDER_PATTERNS = [
+    /\b(remind|reminder|follow up|follow-up|ping me)\b/i,
+    /\b(call me back|message me later|ask me later)\b/i
+];
+
+// Return/refund/exchange questions go to the Return Policy Agent.
+// NOTE: a bare "I want a refund" (action) is intentionally NOT caught here so it
+// still flows to the TransactionEngine refund-confirmation guardrail. We only
+// claim RETURN_POLICY for return/exchange and refund *questions*.
+const RETURN_POLICY_PATTERNS = [
+    /\breturn(s|ing)?\b/i,
+    /\bexchange\b/i,
+    /\breturn\s+policy\b/i,
+    /\brefund\s+policy\b/i
+];
+const REFUND_QUESTION_CUES = /\b(can|could|am|are|is|eligible|qualify|able|how|what|when|policy|allowed)\b/i;
 
 /**
  * Intent Classifier (AI powered via Groq + Local Regex)
  */
 class IntentClassifier {
     static async classify(message, session) {
+        const text = String(message || '').trim();
+
+        if (REMINDER_PATTERNS.some((pattern) => pattern.test(text))) {
+            return {
+                intent_type: 'REMINDER',
+                confidence: 'HIGH',
+                source: 'rule'
+            };
+        }
+
+        const mentionsReturnOrExchange = RETURN_POLICY_PATTERNS.some((pattern) => pattern.test(text));
+        const isRefundQuestion = /\b(refund|money\s*back)\b/i.test(text) && REFUND_QUESTION_CUES.test(text);
+        if (mentionsReturnOrExchange || isRefundQuestion) {
+            return {
+                intent_type: 'RETURN_POLICY',
+                confidence: 'HIGH',
+                source: 'rule'
+            };
+        }
+
+        // Cancellation must beat the ORDER_NEW regex: "cancel my order" contains
+        // "order", so the local "(want|place|buy).*order" pattern would otherwise
+        // outscore "cancel.*order" and misroute it to a product/order flow.
+        if (/\bcancel\b/i.test(text)) {
+            return {
+                intent_type: 'TRANSACTIONAL',
+                confidence: 'HIGH',
+                source: 'rule'
+            };
+        }
+
+        if (SMALL_TALK_PATTERNS.some((pattern) => pattern.test(text))) {
+            return {
+                intent_type: 'SMALL_TALK',
+                confidence: 'HIGH',
+                source: 'rule'
+            };
+        }
+
         // Level 1: Fast Regex Pre-check (Teammate's logic)
         const localIntent = this.checkLocalRegex(message);
 
@@ -88,12 +152,18 @@ class IntentClassifier {
             };
         }
 
+        if (!groq) {
+            return { ...this.mockGroqCall(message), source: 'fallback_no_api' };
+        }
+
         // Level 2: AI Classification (Our logic)
         const allowedIntents = [
             'TRANSACTIONAL',
             'PRODUCT_QUERY',
             'FAQ_QUERY',
             'SMALL_TALK',
+            'REMINDER',
+            'RETURN_POLICY',
             'UNKNOWN'
         ];
 

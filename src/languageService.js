@@ -43,8 +43,34 @@ const AI4BHARAT_LANG_CODES = {
 
 const HINGLISH_MARKERS = new Set([
   "mujhe",
+  "muje",
+  "mujh",
   "mera",
   "meri",
+  "mere",
+  "uska",
+  "iske",
+  "iska",
+  "janana",
+  "jana",
+  "janna",
+  "price",
+  "prize",
+  "prixe",
+  "main",
+  "mai",
+  "mein",
+  "aap",
+  "aapka",
+  "aapki",
+  "aapke",
+  "kitna",
+  "kitne",
+  "kitni",
+  "paas",
+  "ka",
+  "ke",
+  "ki",
   "kya",
   "kaise",
   "kab",
@@ -85,6 +111,52 @@ const AMBIGUOUS_SHORT_REPLIES = new Set([
   "theek",
   "thik",
 ]);
+
+const ENGLISH_SENTENCE_MARKERS = new Set([
+  "i",
+  "me",
+  "my",
+  "you",
+  "your",
+  "want",
+  "need",
+  "please",
+  "can",
+  "could",
+  "would",
+  "what",
+  "where",
+  "when",
+  "how",
+  "is",
+  "are",
+  "do",
+  "does",
+  "order",
+  "payment",
+  "cancel",
+  "size",
+]);
+
+const LANGUAGE_SWITCH_INTENT_MARKERS = [
+  "speak",
+  "talk",
+  "reply",
+  "respond",
+  "language",
+  "lang",
+  "bolo",
+  "boliye",
+  "baat",
+  "bata",
+  "likho",
+  "write",
+  "please",
+  "plz",
+  "in",
+  "mai",
+  "mein",
+];
 
 function normalizeLanguageCode(code) {
   if (!code) return "en";
@@ -140,6 +212,91 @@ function pickTranslationText(payload) {
 }
 
 class LanguageService {
+  static isLikelyEnglishSentence(message) {
+    const words = String(message || "")
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .map((word) => word.replace(/[^a-z]/g, ""))
+      .filter(Boolean);
+
+    if (words.length < 3) return false;
+
+    let markerHits = 0;
+    for (const word of words) {
+      if (ENGLISH_SENTENCE_MARKERS.has(word)) markerHits += 1;
+    }
+
+    return markerHits >= 2;
+  }
+
+  static shouldAutoSwitchReplyLanguage(
+    message,
+    detectedLanguage,
+    currentReplyLanguage,
+  ) {
+    const detectedCode = normalizeLanguageCode(detectedLanguage?.code || "en");
+    const currentCode = normalizeLanguageCode(currentReplyLanguage || "en");
+
+    if (detectedCode === currentCode) return false;
+    if (this.isAmbiguousShortReply(message)) return false;
+
+    // Script-based detection is a strong indicator that the user switched language.
+    if (detectedLanguage?.source === "script") return true;
+
+    // Hinglish detection should switch naturally when user starts typing romanized Hindi.
+    if (detectedCode === "hinglish" && this.isLikelyHinglish(message)) {
+      return true;
+    }
+
+    // Switch to English only when user writes a clear English sentence,
+    // not when they send a single product term like "Jacket".
+    if (detectedCode === "en" && currentCode !== "en") {
+      return this.isLikelyEnglishSentence(message);
+    }
+
+    return detectedLanguage?.confidence === "HIGH";
+  }
+
+  static detectExplicitLanguageSwitch(message) {
+    const text = String(message || "").trim().toLowerCase();
+    if (!text) return null;
+
+    const hasIntentMarker = LANGUAGE_SWITCH_INTENT_MARKERS.some((marker) =>
+      text.includes(marker),
+    );
+
+    if (!hasIntentMarker) {
+      return null;
+    }
+
+    if (/(\bhinglish\b)/i.test(text)) {
+      return {
+        code: "hinglish",
+        source: "explicit_switch",
+        confidence: "HIGH",
+      };
+    }
+
+    if (/(\bhindi\b|हिंदी)/i.test(text)) {
+      return {
+        code: "hi",
+        source: "explicit_switch",
+        confidence: "HIGH",
+      };
+    }
+
+    if (/(\benglish\b|angrezi)/i.test(text)) {
+      return {
+        code: "en",
+        source: "explicit_switch",
+        confidence: "HIGH",
+      };
+    }
+
+    return null;
+  }
+
   static detectUserLanguage(message, session = {}) {
     const text = String(message || "").trim();
     if (!text) {

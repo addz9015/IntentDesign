@@ -60,11 +60,11 @@
     "patterns": [
       {
         "lang": "hi",
-        "regex": "(namaste|bhai|aur batao)"
+        "regex": "\\b(namaste|bhai|aur batao)\\b"
       },
       {
         "lang": "en",
-        "regex": "(hi|hello|hey|sir|madam)"
+        "regex": "\\b(hi|hello|hey|sir|madam)\\b"
       }
     ]
   }

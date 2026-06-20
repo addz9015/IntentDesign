@@ -34,6 +34,10 @@ class SessionManager {
       previous_orders_loaded: false,
       greeting_shown: false, // Track if initial greeting has been shown
       user_language: "en", // Last detected preferred language for reply continuity
+      reply_language_preference: "en", // Sticky language used for assistant replies
+      negotiated_product_id: null,
+      negotiated_price_cents: null,
+      negotiation_attempts: 0,
     };
   }
 
